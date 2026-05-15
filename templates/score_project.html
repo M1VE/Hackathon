@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Оценка проекта: {{ assignment.project.title }}</h1>
+
+<div class="card">
+    <p><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
+    <p>{{ assignment.project.description }}</p>
+
+    {% if assignment.project.repository_url %}
+        <p><a href="{{ assignment.project.repository_url }}" target="_blank">Репозиторий</a></p>
+    {% endif %}
+
+    {% if assignment.project.demo_url %}
+        <p><a href="{{ assignment.project.demo_url }}" target="_blank">Демо</a></p>
+    {% endif %}
+
+    {% if assignment.project.video_url %}
+        <p><a href="{{ assignment.project.video_url }}" target="_blank">Видео</a></p>
+    {% endif %}
+</div>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    {% for criterion in criteria %}
+        <div class="card">
+            <h3>{{ criterion.name }}</h3>
+            <p>Максимум: {{ criterion.max_score }} | Вес: {{ criterion.weight }}</p>
+
+            <label>Балл</label>
+            <input type="number" name="score_{{ criterion.id }}" min="0" max="{{ criterion.max_score }}" required>
+
+            <label>Комментарий</label>
+            <textarea name="comment_{{ criterion.id }}"></textarea>
+        </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">Сохранить оценки</button>
+</form>
+{% endblock %}

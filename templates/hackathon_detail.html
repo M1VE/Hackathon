@@ -1,0 +1,12 @@
+{% if user.is_authenticated and user.role == "participant" %}
+    {% if is_joined %}
+        {% if user_team %}
+            <p><b>Ваша команда:</b> {{ user_team.team_name }}</p>
+            <a class="btn" href="{% url 'submit_project' hackathon.id %}">
+                {% if project %}Редактировать проект{% else %}Подать проект{% endif %}
+            </a>
+        {% else %}
+            <p>Вы зарегистрированы, но пока не состоите в команде.</p>
+        {% endif %}
+    {% endif %}
+{% endif %}

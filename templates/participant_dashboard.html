@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Кабинет участника</h1>
+
+<p>Здесь участник будет видеть свои хакатоны, команду и проект.</p>
+
+<h2>Мои хакатоны</h2>
+
+{% for item in participations %}
+    <div class="card">
+        <h3>{{ item.hackathon.title }}</h3>
+        <a class="btn" href="{% url 'hackathon_detail' item.hackathon.id %}">Открыть</a>
+    </div>
+{% empty %}
+    <p>Вы пока не зарегистрированы ни на один хакатон.</p>
+{% endfor %}
+{% endblock %}

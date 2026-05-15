@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Подача проекта: {{ hackathon.title }}</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Название проекта</label>
+    <input type="text" name="title" value="{{ project.title|default:'' }}" required>
+
+    <label>Описание</label>
+    <textarea name="description" required>{{ project.description|default:'' }}</textarea>
+
+    <label>Технологии</label>
+    <textarea name="technologies">{{ project.technologies|default:'' }}</textarea>
+
+    <label>Ссылка на проект</label>
+    <input type="url" name="project_url" value="{{ project.project_url|default:'' }}">
+
+    <label>GitHub / репозиторий</label>
+    <input type="url" name="repository_url" value="{{ project.repository_url|default:'' }}">
+
+    <label>Демо</label>
+    <input type="url" name="demo_url" value="{{ project.demo_url|default:'' }}">
+
+    <label>Видео</label>
+    <input type="url" name="video_url" value="{{ project.video_url|default:'' }}">
+
+    <button class="btn" type="submit">Сохранить проект</button>
+</form>
+{% endblock %}

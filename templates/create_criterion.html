@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Добавить критерий для {{ hackathon.title }}</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Название критерия</label>
+    <input type="text" name="name" required>
+
+    <label>Максимальный балл</label>
+    <input type="number" name="max_score" value="10" required>
+
+    <label>Вес критерия</label>
+    <input type="number" step="0.1" name="weight" value="1" required>
+
+    <button class="btn" type="submit">Сохранить</button>
+</form>
+{% endblock %}

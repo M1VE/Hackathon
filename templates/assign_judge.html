@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Назначить жюри</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Выберите жюри</label>
+
+    <select name="judge_id">
+        {% for judge in judges %}
+            <option value="{{ judge.id }}">
+                {{ judge.full_name }} ({{ judge.email }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">
+        Назначить
+    </button>
+</form>
+{% endblock %}

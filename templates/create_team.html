@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Создать команду</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Название команды</label>
+    <input type="text" name="team_name" required>
+
+    <label>Ментор</label>
+    <select name="mentor">
+        <option value="">Без ментора</option>
+
+        {% for mentor in mentors %}
+            <option value="{{ mentor.id }}">
+                {{ mentor.full_name }} ({{ mentor.email }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>
+        <input type="checkbox" name="is_open_for_random_join">
+        Разрешить случайный добор участников
+    </label>
+
+    <button class="btn" type="submit">
+        Создать команду
+    </button>
+</form>
+{% endblock %}

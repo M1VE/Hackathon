@@ -5,10 +5,12 @@ from django.db import models
 class Hackathon(models.Model):
     STATUS_CHOICES = [
         ("draft", "Draft"),
-        ("published", "Published"),
-        ("running", "Running"),
+        ("registration", "Registration"),
+        ("team_building", "Team Building"),
+        ("submission", "Submission"),
         ("judging", "Judging"),
         ("finished", "Finished"),
+        ("archived", "Archived"),
     ]
 
     FORMAT_CHOICES = [
@@ -18,19 +20,30 @@ class Hackathon(models.Model):
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+
     organizer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="organized_hackathons"
+        related_name="organized_hackathons",
     )
-    format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default="intra")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
-    is_published = models.BooleanField(default=False)
+
+    format = models.CharField(
+        max_length=20,
+        choices=FORMAT_CHOICES,
+        default="intra",
+    )
+
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default="draft",
+    )
+
     is_active = models.BooleanField(default=True)
 
-    # Правила команд
     min_team_size = models.PositiveIntegerField(default=2)
     max_team_size = models.PositiveIntegerField(default=5)
+
     allow_random_teaming = models.BooleanField(default=True)
     allow_mentor_assignment = models.BooleanField(default=True)
     max_mentors_per_team = models.PositiveIntegerField(default=1)
@@ -56,9 +69,14 @@ class HackathonStage(models.Model):
     hackathon = models.ForeignKey(
         Hackathon,
         on_delete=models.CASCADE,
-        related_name="stages"
+        related_name="stages",
     )
-    stage_name = models.CharField(max_length=100, choices=STAGE_CHOICES)
+
+    stage_name = models.CharField(
+        max_length=100,
+        choices=STAGE_CHOICES,
+    )
+
     deadline = models.DateTimeField()
 
     class Meta:
@@ -73,13 +91,15 @@ class HackathonParticipant(models.Model):
     hackathon = models.ForeignKey(
         Hackathon,
         on_delete=models.CASCADE,
-        related_name="participants"
+        related_name="participants",
     )
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="hackathon_participations"
+        related_name="hackathon_participations",
     )
+
     registration_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

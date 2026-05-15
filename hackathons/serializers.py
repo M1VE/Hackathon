@@ -19,7 +19,6 @@ class HackathonSerializer(serializers.ModelSerializer):
             "organizer_email",
             "format",
             "status",
-            "is_published",
             "is_active",
             "min_team_size",
             "max_team_size",
@@ -34,7 +33,12 @@ class HackathonSerializer(serializers.ModelSerializer):
 class HackathonStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = HackathonStage
-        fields = ["id", "hackathon", "stage_name", "deadline"]
+        fields = [
+            "id",
+            "hackathon",
+            "stage_name",
+            "deadline",
+        ]
 
 
 class HackathonParticipantSerializer(serializers.ModelSerializer):
@@ -42,5 +46,11 @@ class HackathonParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HackathonParticipant
-        fields = ["id", "hackathon", "user", "user_email", "registration_date"]
+        fields = [
+            "id",
+            "hackathon",
+            "user",
+            "user_email",
+            "registration_date",
+        ]
         read_only_fields = ["registration_date"]

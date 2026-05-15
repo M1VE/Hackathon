@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ team.team_name }}</h1>
+
+<div class="card">
+    <p><b>Хакатон:</b> {{ team.hackathon.title }}</p>
+    <p><b>Капитан:</b> {{ team.captain.full_name }}</p>
+    <p><b>Ментор:</b>
+        {% if team.mentor %}
+            {{ team.mentor.full_name }}
+        {% else %}
+            Не назначен
+        {% endif %}
+    </p>
+
+    <p><b>Invite code:</b> {{ team.invite_code }}</p>
+</div>
+
+<h2>Участники команды</h2>
+
+{% for member in members %}
+    <div class="card">
+        <h3>{{ member.user.full_name }}</h3>
+        <p>{{ member.user.email }}</p>
+        <p>{{ member.role_in_team }}</p>
+    </div>
+{% endfor %}
+
+{% if request.user == team.captain %}
+<h2>Добавить участника</h2>
+
+<form method="post" action="{% url 'invite_member' team.id %}" class="form">
+    {% csrf_token %}
+
+    <label>Участник</label>
+
+    <select name="user_id">
+        {% for user in available_participants %}
+            <option value="{{ user.id }}">
+                {{ user.full_name }} ({{ user.email }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">
+        Добавить
+    </button>
+</form>
+{% endif %}
+{% endblock %}

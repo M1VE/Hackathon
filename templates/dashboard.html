@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Личный кабинет</h1>
+
+<div class="card">
+    <p><b>Email:</b> {{ user.email }}</p>
+    <p><b>Имя:</b> {{ user.full_name }}</p>
+    <p><b>Роль:</b> {{ user.role }}</p>
+</div>
+
+<h2>Мои хакатоны</h2>
+
+<div class="grid">
+    {% for item in participations %}
+        <div class="card">
+            <h3>{{ item.hackathon.title }}</h3>
+            <p>{{ item.hackathon.description|truncatechars:120 }}</p>
+            <a class="btn" href="{% url 'hackathon_detail' item.hackathon.id %}">Открыть</a>
+        </div>
+    {% empty %}
+        <p>Вы пока не зарегистрированы ни на один хакатон.</p>
+    {% endfor %}
+</div>
+{% endblock %}

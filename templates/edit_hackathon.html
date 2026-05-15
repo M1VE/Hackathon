@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Редактировать хакатон</h1>
+
+<form method="post" class="form">
+
+    {% csrf_token %}
+
+    <label>Название</label>
+
+    <input type="text"
+           name="title"
+           value="{{ hackathon.title }}"
+           required>
+
+    <label>Описание</label>
+
+    <textarea name="description">
+{{ hackathon.description }}
+    </textarea>
+
+    <label>Формат</label>
+
+    <select name="format">
+
+        <option value="intra"
+            {% if hackathon.format == "intra" %}
+                selected
+            {% endif %}
+        >
+            Внутривузовский
+        </option>
+
+        <option value="inter"
+            {% if hackathon.format == "inter" %}
+                selected
+            {% endif %}
+        >
+            Межвузовский
+        </option>
+
+    </select>
+
+    <label>Статус</label>
+
+    <select name="status">
+
+        {% for value, label in hackathon.STATUS_CHOICES %}
+
+            <option value="{{ value }}"
+                {% if hackathon.status == value %}
+                    selected
+                {% endif %}
+            >
+                {{ label }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <label>Минимум участников</label>
+
+    <input type="number"
+           name="min_team_size"
+           value="{{ hackathon.min_team_size }}">
+
+    <label>Максимум участников</label>
+
+    <input type="number"
+           name="max_team_size"
+           value="{{ hackathon.max_team_size }}">
+
+    <label>
+        <input type="checkbox"
+               name="allow_random_teaming"
+               {% if hackathon.allow_random_teaming %}
+                    checked
+               {% endif %}
+        >
+        Разрешить случайный добор
+    </label>
+
+    <label>
+        <input type="checkbox"
+               name="allow_mentor_assignment"
+               {% if hackathon.allow_mentor_assignment %}
+                    checked
+               {% endif %}
+        >
+        Разрешить менторов
+    </label>
+
+    <button class="btn" type="submit">
+        Сохранить
+    </button>
+
+</form>
+
+{% endblock %}

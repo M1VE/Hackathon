@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero">
+
+    <h1>Hackathon Platform</h1>
+
+    <p>
+        Управление хакатонами, командами,
+        проектами и оцениванием.
+    </p>
+
+    <a class="btn"
+       href="{% url 'hackathon_list' %}">
+        Смотреть хакатоны
+    </a>
+
+</section>
+
+<h2>Активные хакатоны</h2>
+
+<div class="grid">
+
+    {% for hackathon in hackathons %}
+
+        <div class="card">
+
+            <h3>{{ hackathon.title }}</h3>
+
+            <p>
+                {{ hackathon.description|truncatechars:120 }}
+            </p>
+
+            <p>
+                <b>Статус:</b> {{ hackathon.status }}
+            </p>
+
+            <a class="btn"
+               href="{% url 'hackathon_detail' hackathon.id %}">
+                Подробнее
+            </a>
+
+        </div>
+
+    {% empty %}
+
+        <p>Активных хакатонов пока нет.</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

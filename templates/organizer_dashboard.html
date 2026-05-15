@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Кабинет организатора</h1>
+
+<a class="btn" href="{% url 'create_hackathon' %}">Создать хакатон</a>
+
+<h2>Мои хакатоны</h2>
+
+{% for hackathon in hackathons %}
+    <div class="card">
+        <h3>{{ hackathon.title }}</h3>
+        <p>{{ hackathon.description|truncatechars:150 }}</p>
+        <p><b>Статус:</b> {{ hackathon.status }}</p>
+        <p><b>Опубликован:</b> {{ hackathon.is_published }}</p>
+
+        <a class="btn" href="{% url 'manage_hackathon' hackathon.id %}">Управлять</a>
+    </div>
+{% empty %}
+    <p>У вас пока нет хакатонов.</p>
+{% endfor %}
+{% endblock %}

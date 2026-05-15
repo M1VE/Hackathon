@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Создать хакатон</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Название</label>
+    <input type="text" name="title" required>
+
+    <label>Описание</label>
+    <textarea name="description" required></textarea>
+
+    <label>Формат</label>
+    <select name="format">
+        <option value="intra">Внутривузовский</option>
+        <option value="inter">Межвузовский</option>
+    </select>
+
+    <label>Статус</label>
+    <select name="status">
+        <option value="draft">Draft</option>
+        <option value="published">Published</option>
+        <option value="running">Running</option>
+        <option value="judging">Judging</option>
+        <option value="finished">Finished</option>
+    </select>
+
+    <label>Минимум участников в команде</label>
+    <input type="number" name="min_team_size" value="2">
+
+    <label>Максимум участников в команде</label>
+    <input type="number" name="max_team_size" value="5">
+
+    <label><input type="checkbox" name="is_published"> Опубликовать</label>
+    <label><input type="checkbox" name="allow_random_teaming" checked> Разрешить случайный добор</label>
+    <label><input type="checkbox" name="allow_mentor_assignment" checked> Разрешить менторов</label>
+
+    <h3>Дедлайны</h3>
+
+    <label>Регистрация до</label>
+    <input type="datetime-local" name="registration_deadline">
+
+    <label>Формирование команд до</label>
+    <input type="datetime-local" name="team_building_deadline">
+
+    <label>Подача проектов до</label>
+    <input type="datetime-local" name="submission_deadline">
+
+    <label>Оценивание до</label>
+    <input type="datetime-local" name="judging_deadline">
+
+    <label>Публикация результатов</label>
+    <input type="datetime-local" name="results_deadline">
+
+    <button class="btn" type="submit">Создать</button>
+</form>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Назначить проект жюри</h1>
+
+<form method="post" class="form">
+    {% csrf_token %}
+
+    <label>Жюри</label>
+
+    <select name="judge_record_id">
+        {% for judge in judges %}
+            <option value="{{ judge.id }}">
+                {{ judge.user.full_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Проект</label>
+
+    <select name="project_id">
+        {% for project in projects %}
+            <option value="{{ project.id }}">
+                {{ project.title }} — {{ project.team.team_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">
+        Назначить
+    </button>
+</form>
+{% endblock %}

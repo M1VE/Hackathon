@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Кабинет жюри</h1>
+
+<h2>Мои хакатоны как жюри</h2>
+
+{% for judge_record in judge_records %}
+    <div class="card">
+        <h3>{{ judge_record.hackathon.title }}</h3>
+        <p>Вы назначены жюри этого хакатона.</p>
+    </div>
+{% empty %}
+    <p>Вы пока не назначены жюри ни одного хакатона.</p>
+{% endfor %}
+
+<h2>Проекты для оценки</h2>
+
+{% for assignment in assignments %}
+    <div class="card">
+        <h3>{{ assignment.project.title }}</h3>
+        <p><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
+        <p><b>Хакатон:</b> {{ assignment.judge.hackathon.title }}</p>
+        <p>{{ assignment.project.description|truncatechars:180 }}</p>
+
+        <a class="btn" href="{% url 'score_project' assignment.id %}">Оценить проект</a>
+    </div>
+{% empty %}
+    <p>Вам пока не назначены проекты для оценки.</p>
+{% endfor %}
+{% endblock %}

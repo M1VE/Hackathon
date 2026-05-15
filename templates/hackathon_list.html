@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Хакатоны</h1>
+
+<div class="grid">
+
+    {% for hackathon in hackathons %}
+
+        <div class="card">
+
+            <h3>{{ hackathon.title }}</h3>
+
+            <p>
+                {{ hackathon.description|truncatechars:150 }}
+            </p>
+
+            <p>
+                <b>Статус:</b> {{ hackathon.status }}
+            </p>
+
+            <p>
+                <b>Формат:</b> {{ hackathon.format }}
+            </p>
+
+            <a class="btn"
+               href="{% url 'hackathon_detail' hackathon.id %}">
+                Открыть
+            </a>
+
+        </div>
+
+    {% empty %}
+
+        <p>Хакатонов пока нет.</p>
+
+    {% endfor %}
+
+</div>
+{% endblock %}
