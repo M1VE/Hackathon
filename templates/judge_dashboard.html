@@ -3,29 +3,32 @@
 {% block content %}
 <h1>Кабинет жюри</h1>
 
-<h2>Мои хакатоны как жюри</h2>
+<h2>Ваши хакатоны</h2>
 
-{% for judge_record in judge_records %}
+{% for judge in judge_records %}
     <div class="card">
-        <h3>{{ judge_record.hackathon.title }}</h3>
-        <p>Вы назначены жюри этого хакатона.</p>
+        <h3>{{ judge.hackathon.title }}</h3>
+        <p>Статус: {{ judge.hackathon.status }}</p>
     </div>
 {% empty %}
-    <p>Вы пока не назначены жюри ни одного хакатона.</p>
+    <p>Вы пока не назначены жюри.</p>
 {% endfor %}
 
-<h2>Проекты для оценки</h2>
+<h2>Проекты на оценивание</h2>
 
-{% for assignment in assignments %}
+{% for project in projects %}
     <div class="card">
-        <h3>{{ assignment.project.title }}</h3>
-        <p><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
-        <p><b>Хакатон:</b> {{ assignment.judge.hackathon.title }}</p>
-        <p>{{ assignment.project.description|truncatechars:180 }}</p>
+        <h3>{{ project.title }}</h3>
 
-        <a class="btn" href="{% url 'score_project' assignment.id %}">Оценить проект</a>
+        <p><b>Команда:</b> {{ project.team.team_name }}</p>
+        <p><b>Хакатон:</b> {{ project.team.hackathon.title }}</p>
+
+        <a class="btn" href="{% url 'score_project' project.id %}">
+            Оценить проект
+        </a>
     </div>
 {% empty %}
-    <p>Вам пока не назначены проекты для оценки.</p>
+    <p>Сейчас нет проектов для оценивания.</p>
 {% endfor %}
+
 {% endblock %}

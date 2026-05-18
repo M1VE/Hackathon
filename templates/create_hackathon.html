@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Создать хакатон</h1>
 
-<form method="post" class="form">
+<form method="post" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
     <label>Название</label>
@@ -21,21 +21,34 @@
     <label>Статус</label>
     <select name="status">
         <option value="draft">Draft</option>
-        <option value="published">Published</option>
-        <option value="running">Running</option>
+        <option value="registration">Registration</option>
+        <option value="team_building">Team Building</option>
+        <option value="submission">Submission</option>
         <option value="judging">Judging</option>
         <option value="finished">Finished</option>
     </select>
 
-    <label>Минимум участников в команде</label>
+    <label>Минимум участников</label>
     <input type="number" name="min_team_size" value="2">
 
-    <label>Максимум участников в команде</label>
+    <label>Максимум участников</label>
     <input type="number" name="max_team_size" value="5">
 
-    <label><input type="checkbox" name="is_published"> Опубликовать</label>
-    <label><input type="checkbox" name="allow_random_teaming" checked> Разрешить случайный добор</label>
-    <label><input type="checkbox" name="allow_mentor_assignment" checked> Разрешить менторов</label>
+    <label>
+        <input type="checkbox" name="allow_random_teaming" checked>
+        Разрешить случайный добор
+    </label>
+
+    <label>
+        <input type="checkbox" name="allow_mentor_assignment" checked>
+        Разрешить менторов
+    </label>
+
+    <label>PDF / файл правил</label>
+    <input type="file" name="rules_file">
+
+    <label>Картинка хакатона</label>
+    <input type="file" name="cover_image" accept="image/*">
 
     <h3>Дедлайны</h3>
 

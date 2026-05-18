@@ -70,9 +70,13 @@
     </div>
 {% empty %}
     <p>Проектов пока нет.</p>
-<a class="btn"
-   href="{% url 'edit_hackathon' hackathon.id %}">
+<a class="btn" href="{% url 'edit_hackathon' hackathon.id %}">
     Редактировать хакатон
 </a>
+
+<a class="btn danger" href="{% url 'delete_hackathon' hackathon.id %}">
+    Удалить хакатон
+</a>
+
 {% endfor %}
 {% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Удаление хакатона</h1>
+
+<div class="card">
+    <h2>{{ hackathon.title }}</h2>
+
+    <p>
+        Вы действительно хотите удалить этот хакатон?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button class="btn danger" type="submit">
+            Удалить
+        </button>
+    </form>
+</div>
+
+{% endblock %}

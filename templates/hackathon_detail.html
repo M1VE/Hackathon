@@ -1,12 +1,94 @@
-{% if user.is_authenticated and user.role == "participant" %}
-    {% if is_joined %}
-        {% if user_team %}
-            <p><b>Ваша команда:</b> {{ user_team.team_name }}</p>
-            <a class="btn" href="{% url 'submit_project' hackathon.id %}">
-                {% if project %}Редактировать проект{% else %}Подать проект{% endif %}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ hackathon.title }}</h1>
+
+    {% if hackathon.cover_image %}
+        <img src="{{ hackathon.cover_image.url }}" alt="Hackathon cover" style="max-width: 100%; border-radius: 14px;">
+    {% endif %}
+
+    <p>{{ hackathon.description }}</p>
+
+    <p><b>Формат:</b> {{ hackathon.format }}</p>
+    <p><b>Статус:</b> {{ hackathon.status }}</p>
+    <p><b>Команда:</b> {{ hackathon.min_team_size }}–{{ hackathon.max_team_size }} участников</p>
+
+    {% if hackathon.rules_file %}
+        <p>
+            <a href="{{ hackathon.rules_file.url }}" target="_blank">
+                Скачать правила хакатона
             </a>
+        </p>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+    {% if user.role == "participant" %}
+        {% if is_joined %}
+            <div class="card">
+                <p class="success">Вы зарегистрированы на этот хакатон.</p>
+
+                {% if user_team %}
+                    <p><b>Ваша команда:</b> {{ user_team.team_name }}</p>
+
+                    <a class="btn" href="{% url 'team_detail' user_team.id %}">
+                        Открыть команду
+                    </a>
+
+                    <a class="btn" href="{% url 'submit_project' hackathon.id %}">
+                        {% if project %}
+                            Редактировать проект
+                        {% else %}
+                            Подать проект
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <p>Вы пока не состоите в команде.</p>
+
+                    <a class="btn" href="{% url 'create_team' hackathon.id %}">
+                        Создать команду
+                    </a>
+
+                    <a class="btn" href="{% url 'create_random_team' hackathon.id %}">
+                        Создать случайную команду
+                    </a>
+
+                    <a class="btn" href="{% url 'join_team_by_code_form' hackathon.id %}">
+                        Вступить по invite code
+                    </a>
+                {% endif %}
+            </div>
         {% else %}
-            <p>Вы зарегистрированы, но пока не состоите в команде.</p>
+            <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
+                Зарегистрироваться на хакатон
+            </a>
         {% endif %}
     {% endif %}
+{% else %}
+    <div class="card">
+        <p>Чтобы зарегистрироваться на хакатон, войдите в аккаунт.</p>
+        <a class="btn" href="{% url 'site_login' %}">Войти</a>
+    </div>
 {% endif %}
+
+<h2>Открытые команды</h2>
+
+{% for team in open_teams %}
+    <div class="card">
+        <h3>{{ team.team_name }}</h3>
+        <p><b>Капитан:</b> {{ team.captain.full_name }}</p>
+        <p><b>Университет:</b> {{ team.captain.university|default:"-" }}</p>
+        <p><b>Ментор:</b> {{ team.mentor.full_name|default:"Не назначен" }}</p>
+
+        {% if user.is_authenticated and user.role == "participant" and is_joined and not user_team %}
+            <a class="btn" href="{% url 'join_open_team' team.id %}">
+                Вступить в команду
+            </a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Открытых команд пока нет.</p>
+{% endfor %}
+
+{% endblock %}

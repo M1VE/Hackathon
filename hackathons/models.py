@@ -27,18 +27,8 @@ class Hackathon(models.Model):
         related_name="organized_hackathons",
     )
 
-    format = models.CharField(
-        max_length=20,
-        choices=FORMAT_CHOICES,
-        default="intra",
-    )
-
-    status = models.CharField(
-        max_length=30,
-        choices=STATUS_CHOICES,
-        default="draft",
-    )
-
+    format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default="intra")
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="draft")
     is_active = models.BooleanField(default=True)
 
     min_team_size = models.PositiveIntegerField(default=2)
@@ -48,6 +38,8 @@ class Hackathon(models.Model):
     allow_mentor_assignment = models.BooleanField(default=True)
     max_mentors_per_team = models.PositiveIntegerField(default=1)
 
+    cover_image = models.ImageField(upload_to="hackathons/covers/", blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -55,6 +47,24 @@ class Hackathon(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class HackathonAttachment(models.Model):
+    hackathon = models.ForeignKey(
+        Hackathon,
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+
+    title = models.CharField(max_length=255, blank=True, null=True)
+    file = models.FileField(upload_to="hackathons/attachments/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "hackathon_attachments"
+
+    def __str__(self):
+        return self.title or self.file.name
 
 
 class HackathonStage(models.Model):
@@ -72,11 +82,7 @@ class HackathonStage(models.Model):
         related_name="stages",
     )
 
-    stage_name = models.CharField(
-        max_length=100,
-        choices=STAGE_CHOICES,
-    )
-
+    stage_name = models.CharField(max_length=100, choices=STAGE_CHOICES)
     deadline = models.DateTimeField()
 
     class Meta:
