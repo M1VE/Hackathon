@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #111827; /* Темный фон карточки */
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 32px;
+        color: #e5e7eb;
+    }
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        border-bottom: 1px solid #1f2937;
+        padding-bottom: 24px;
+        margin-bottom: 24px;
+    }
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #1e3a8a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: #38bdf8;
+        border: 2px solid #334155;
+    }
+    .profile-info h1 {
+        margin: 0 0 6px 0;
+        font-size: 26px;
+        color: #fff;
+    }
+    .role-badge {
+        background: #1f2937;
+        color: #9ca3af;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        border: 1px solid #374151;
+        text-transform: uppercase;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+    .stat-card {
+        background: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 42px;
+        font-weight: bold;
+        color: #38bdf8; /* Акцентный голубой */
+        margin-bottom: 4px;
+    }
+    .stat-label {
+        font-size: 14px;
+        color: #9ca3af;
+    }
+    .section-title {
+        font-size: 20px;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+    .hackathon-mini-list {
+        list-style: none;
+        padding: 0;
+    }
+    .hackathon-mini-item {
+        background: #1f2937;
+        padding: 16px 20px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #374151;
+    }
+    .hackathon-link {
+        color: #38bdf8 !important;
+        text-decoration: underline !important;
+        font-weight: 600;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ profile_user.username|slice:":2"|upper }}
+        </div>
+        <div class="profile-info">
+            <h1>{{ profile_user.first_name }} {{ profile_user.last_name|default:profile_user.username }}</h1>
+            <p style="color: #9ca3af; margin: 0 0 10px 0;">@{{ profile_user.username }}</p>
+            {% if profile_user.role %}
+                <span class="role-badge">{{ profile_user.role }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_hackathons }}</div>
+            <div class="stat-label">Участий в хакатонах</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ wins_count }}</div>
+            <div class="stat-label">Побед в финалах 🏆</div>
+        </div>
+        {% if created_hackathons_count > 0 %}
+        <div class="stat-card">
+            <div class="stat-value">{{ created_hackathons_count }}</div>
+            <div class="stat-label">Организовано им</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <h2 class="section-title">Текущая активность</h2>
+        {% if active_hackathons %}
+            <ul class="hackathon-mini-list">
+                {% for hackathon in active_hackathons %}
+                    <li class="hackathon-mini-item">
+                        <a href="/hackathons/{{ hackathon.id }}/" class="hackathon-link">{{ hackathon.title }}</a>
+                        <span style="color: #9ca3af; font-size: 14px;">Статус: {{ hackathon.status }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: #9ca3af;">В данный момент пользователь не участвует в активных хакатонах.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,40 +1,89 @@
 {% extends "base.html" %}
+{% load hackathon_tags %}
 
 {% block content %}
 <h1>Хакатоны</h1>
 
 <div class="grid">
-
     {% for hackathon in hackathons %}
+        <div class="hackathon-card">
+            <style>
+                .hackathon-card {
+                    background: #111827;
+                    border: 1px solid #334155;
+                    padding: 24px;
+                    border-radius: 16px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    min-height: 400px; /* Фиксирует высоту, чтобы карточки были ровными */
+                }
+                /* Фиксированный размер для изображений на карточках */
+                .hackathon-card-img {
+                    width: 100%;
+                    height: 180px;
+                    object-fit: cover;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                }
+                /* Стилизация ссылки на файл (Выделение цветом и подчеркивание) */
+                .file-link {
+                    color: #38bdf8 !important; /* Яркий голубой цвет */
+                    text-decoration: underline !important;
+                    font-weight: 500;
+                }
+                .file-link:hover {
+                    color: #7dd3fc !important;
+                }
+            </style>
+            <div class="card-header">
+                <h2><a href="{% url 'hackathon_detail' hackathon.id %}">{{ hackathon.title }}</a></h2>
+                <span class="badge status-{{ hackathon.status }}">{{ hackathon.get_status_display }}</span>
+            </div>
 
-        <div class="card">
-
-            <h3>{{ hackathon.title }}</h3>
-
-            <p>
-                {{ hackathon.description|truncatechars:150 }}
+            <p class="description">
+                {{ hackathon.description|truncatewords:20 }}
             </p>
-
-            <p>
-                <b>Статус:</b> {{ hackathon.status }}
-            </p>
-
-            <p>
+            <p class="format-info">
                 <b>Формат:</b> {{ hackathon.format }}
             </p>
 
-            <a class="btn"
-               href="{% url 'hackathon_detail' hackathon.id %}">
-                Открыть
-            </a>
+            {% if hackathon.attachments.all %}
+                <div class="attachments-block">
+                    <strong>Документы:</strong>
+                    <ul>
+                        {% for attachment in hackathon.attachments.all %}
+                            <li>
+                                <a href="{{ attachment.file.url }}" target="_blank" class="file-link">
+                                    📄 {{ attachment.title|default:"Правила хакатона" }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
 
+            {% with next_deadline=hackathon|get_current_deadline %}
+                {% if next_deadline %}
+                    <div class="timer-box" data-countdown="{{ next_deadline }}">
+                        <span class="timer-label">До конца этапа ({{ hackathon|get_current_stage_title }}):</span>
+                        <span class="timer-countdown">Считаем...</span>
+                    </div>
+                {% else %}
+                    <div class="timer-box completed">
+                        <span class="timer-countdown">Хакатон завершен 🎉</span>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="card-footer" style="margin-top: 15px;">
+                <a class="btn" href="{% url 'hackathon_detail' hackathon.id %}">
+                    Открыть
+                </a>
+            </div>
         </div>
-
     {% empty %}
-
         <p>Хакатонов пока нет.</p>
-
     {% endfor %}
-
 </div>
 {% endblock %}
