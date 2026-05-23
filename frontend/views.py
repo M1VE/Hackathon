@@ -32,19 +32,25 @@ def role_required(allowed_roles):
 
 
 def home(request):
-    hackathons = Hackathon.objects.filter(
-        is_active=True
-    ).exclude(
-        status="draft"
-    ).order_by("-created_at")[:6]
+    # 1. Получаем все хакатоны, кроме черновиков
+    all_hackathons = Hackathon.objects.exclude(status="draft").order_by("-created_at")
 
-    for hackathon in hackathons:
+    # 2. Обновляем статусы на лету, если это завязано на текущее время
+    for hackathon in all_hackathons:
         update_hackathon_status(hackathon)
 
+    # 3. Делим их на активные и завершенные (ориентируясь на твой статус 'registration' и 'active')
+    # Если у тебя активные хакатоны определяются через поле `is_active=True`, используй: .filter(is_active=True)
+    # В активные берем только те, у которых статус действительно активный или идет регистрация
+    active_hackathons = Hackathon.objects.filter(status__in=['active', 'registration']).exclude(status="draft").order_by("-created_at")[:6]
+    
+    # В завершенные/архивные берем всё остальное (completed, archived)
+    past_hackathons = Hackathon.objects.filter(status__in=['completed', 'archived']).exclude(status="draft").order_by("-created_at")[:6]
+    # 4. Передаем в шаблон именно те переменные, которые он запрашивает
     return render(request, "home.html", {
-        "hackathons": hackathons,
+        "active_hackathons": active_hackathons,
+        "past_hackathons": past_hackathons,
     })
-
 
 def register_view(request):
     if request.user.is_authenticated:

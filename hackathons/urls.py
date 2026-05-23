@@ -1,9 +1,13 @@
 from django.urls import path
-from .views import HackathonCreateView, HackathonListView  # Импортируем твои HTML вьюхи
+from .views import HackathonListView, HackathonCreateView, HackathonDetailView
 
 urlpatterns = [
-    # Главная страница со списком хакатонов
-    path("", HackathonListView.as_view(), name="hackathon_list"),
-    # Страница создания
-    path("create/", HackathonCreateView.as_view(), name="create_hackathon"),
+    # Список хакатонов (/hackathons/)
+    path('', HackathonListView.as_view(), name='hackathon_list'),
+
+    # Создание хакатона (/hackathons/create/)
+    path('create/', HackathonCreateView.as_view(), name='create_hackathon'),
+
+    # Детальная страница конкретного хакатона (/hackathons/ID/)
+    path('<int:pk>/', HackathonDetailView.as_view(), name='hackathon_detail'),
 ]

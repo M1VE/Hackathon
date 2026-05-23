@@ -126,20 +126,23 @@
         {% endif %}
     </div>
 
-    <div>
-        <h2 class="section-title">Текущая активность</h2>
+    <div class="activity-section">
+        <h3>Текущая активность</h3>
+        
         {% if active_hackathons %}
-            <ul class="hackathon-mini-list">
+            <div class="hackathons-activity-list" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                 {% for hackathon in active_hackathons %}
-                    <li class="hackathon-mini-item">
-                        <a href="/hackathons/{{ hackathon.id }}/" class="hackathon-link">{{ hackathon.title }}</a>
-                        <span style="color: #9ca3af; font-size: 14px;">Статус: {{ hackathon.status }}</span>
-                    </li>
+                    <div class="activity-card" style="background: #1a1f2c; border: 1px solid #2e374a; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #fff;">{{ hackathon.title }}</h4>
+                            <span style="font-size: 12px; color: #a0aec0;">Статус: {{ hackathon.get_status_display }}</span>
+                        </div>
+                        <a href="{% url 'hackathon_detail' hackathon.id %}" class="btn-open" style="background: #0084ff; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px;">Открыть</a>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p style="color: #9ca3af;">В данный момент пользователь не участвует в активных хакатонах.</p>
+            <p style="color: #a0aec0; margin-top: 15px;">В данный момент пользователь не участвует в активных хакатонах.</p>
         {% endif %}
     </div>
-</div>
 {% endblock %}

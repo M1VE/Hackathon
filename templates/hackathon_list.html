@@ -35,7 +35,32 @@
                 .file-link:hover {
                     color: #7dd3fc !important;
                 }
+                /* Сброс конфликтующих стилей для блока документов */
+                .custom-attachments {
+                    margin: 15px 0 !important; 
+                    padding: 12px !important; 
+                    background: rgba(255, 255, 255, 0.03) !important; 
+                    border: 1px solid #334155 !important; 
+                    border-radius: 8px !important;
+                    height: auto !important;
+                    width: auto !important;
+                }
+                .custom-attachments ul {
+                    list-style: none !important; 
+                    padding: 0 !important; 
+                    margin: 6px 0 0 0 !important;
+                }
+                .custom-attachments li {
+                    background: none !important;
+                    padding: 0 !important;
+                    margin: 4px 0 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 6px !important;
+                    height: auto !important;
+                }
             </style>
+            
             <div class="card-header">
                 <h2><a href="{% url 'hackathon_detail' hackathon.id %}">{{ hackathon.title }}</a></h2>
                 <span class="badge status-{{ hackathon.status }}">{{ hackathon.get_status_display }}</span>
@@ -49,14 +74,12 @@
             </p>
 
             {% if hackathon.attachments.all %}
-                <div class="attachments-block">
-                    <strong>Документы:</strong>
+                <div class="custom-attachments">
+                    <strong style="color: #9ca3af; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Документы:</strong>
                     <ul>
                         {% for attachment in hackathon.attachments.all %}
                             <li>
-                                <a href="{{ attachment.file.url }}" target="_blank" class="file-link">
-                                    📄 {{ attachment.title|default:"Правила хакатона" }}
-                                </a>
+                                <span style="font-size: 14px; color: #cbd5e1;">📄 {{ attachment.title|default:"Правила хакатона" }}</span>
                             </li>
                         {% endfor %}
                     </ul>

@@ -74,7 +74,7 @@ class Hackathon(models.Model):
     max_mentors_per_team = models.PositiveIntegerField(default=1)
     cover_image = models.ImageField(upload_to="hackathons/covers/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         db_table = "hackathons"
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import View
 from .models import Hackathon, HackathonStage, HackathonAttachment
@@ -35,6 +35,31 @@ def get_status_by_deadlines(hackathon):
     return hackathon.status
 
 
+def home_view(request):
+    """Отображение главной страницы с разделением на активные и завершенные хакатоны."""
+    all_hackathons = Hackathon.objects.all()
+    
+    # АВТОСМЕНА ЭТАПОВ: Проверяем и обновляем статусы перед разделением
+    for hackathon in all_hackathons:
+        new_status = get_status_by_deadlines(hackathon)
+        if hackathon.status != new_status:
+            hackathon.status = new_status
+            hackathon.save()
+
+    # Фильтруем активные хакатоны на основе статусов из функции get_status_by_deadlines
+    active_statuses = ['registration', 'team_building', 'submission', 'judging', 'published']
+    active_hackathons = Hackathon.objects.filter(status__in=active_statuses).order_by('-id')
+    
+    # Фильтруем завершенные/архивные хакатоны
+    past_hackathons = Hackathon.objects.filter(status__in=['finished', 'archived']).order_by('-id')
+
+    context = {
+        'active_hackathons': active_hackathons,
+        'past_hackathons': past_hackathons,
+    }
+    return render(request, 'home.html', context)
+
+
 class HackathonListView(View):
     def get(self, request):
         hackathons = Hackathon.objects.all()
@@ -47,6 +72,20 @@ class HackathonListView(View):
                 hackathon.save() # Сохраняем новый статус в базу данных
                 
         return render(request, "hackathon_list.html", {"hackathons": hackathons})
+
+
+class HackathonDetailView(View):
+    """Детальная страница хакатона (добавлено для исправления ошибки)"""
+    def get(self, request, pk):
+        hackathon = get_object_or_404(Hackathon, pk=pk)
+        
+        # АВТОСМЕНА ЭТАПОВ: Проверяем статус перед показом страницы
+        new_status = get_status_by_deadlines(hackathon)
+        if hackathon.status != new_status:
+            hackathon.status = new_status
+            hackathon.save()
+            
+        return render(request, "hackathon_detail.html", {"hackathon": hackathon})
 
 
 class HackathonCreateView(View):

@@ -10,7 +10,7 @@ urlpatterns = [
 
     path("api/auth/", include("users.urls")),
     path("hackathons/", include("hackathons.urls")),
-    path("api/teams/", include("teams.urls")),
+    path("teams/", include("teams.urls")),
     path("api/projects/", include("projects.urls")),
     path("api/judging/", include("judging.urls")),
     path("api/announcements/", include("announcements.urls")),
