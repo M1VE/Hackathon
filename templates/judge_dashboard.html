@@ -3,17 +3,6 @@
 {% block content %}
 <h1>Кабинет жюри</h1>
 
-<h2>Ваши хакатоны</h2>
-
-{% for judge in judge_records %}
-    <div class="card">
-        <h3>{{ judge.hackathon.title }}</h3>
-        <p>Статус: {{ judge.hackathon.status }}</p>
-    </div>
-{% empty %}
-    <p>Вы пока не назначены жюри.</p>
-{% endfor %}
-
 <h2>Проекты на оценивание</h2>
 
 {% for project in projects %}
@@ -30,5 +19,18 @@
 {% empty %}
     <p>Сейчас нет проектов для оценивания.</p>
 {% endfor %}
+
+<h2>Ваши хакатоны</h2>
+
+{% for judge in judge_records %}
+    <div class="card">
+        <h3>{{ judge.hackathon.title }}</h3>
+        <p>Статус: {{ judge.hackathon.status }}</p>
+    </div>
+{% empty %}
+    <p>Вы пока не назначены жюри.</p>
+{% endfor %}
+
+
 
 {% endblock %}

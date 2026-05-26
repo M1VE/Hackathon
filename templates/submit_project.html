@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Подача проекта</h1>
+<h1 style="text-align: center;">Подача проекта</h1>
 
-<form method="post" enctype="multipart/form-data" class="form">
+<form method="post" enctype="multipart/form-data" class="form" style="max-width: 600px; margin: 0 auto;">
     {% csrf_token %}
 
     <label>Название проекта</label>
@@ -43,10 +43,10 @@
     <input type="file" name="video_file" accept="video/*">
 
     {% if project.video_file %}
-        <video controls style="max-width: 500px; margin-top: 10px; border-radius: 12px;">
+        <video controls style="width: 100%; max-width: 100%; margin-top: 10px; border-radius: 12px;">
             <source src="{{ project.video_file.url }}">
         </video>
-        <p><a href="{{ project.video_file.url }}" target="_blank">Скачать видео</a></p>
+        <p><a href="{{ project.video_file.url }}" target="_blank">Открыть видео</a></p>
     {% endif %}
 
     <button class="btn" type="submit">Сохранить проект</button>

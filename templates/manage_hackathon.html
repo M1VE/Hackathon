@@ -1,82 +1,79 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h1>Управление хакатоном: {{ hackathon.title }}</h1>
 
-<div class="card">
+<h1>Управление: {{ hackathon.title }}</h1>
+
+<div class="card" style="margin-bottom: 20px;">
     <p><b>Статус:</b> {{ hackathon.status }}</p>
     <p><b>Формат:</b> {{ hackathon.format }}</p>
     <p><b>Команда:</b> {{ hackathon.min_team_size }}–{{ hackathon.max_team_size }} участников</p>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+        <a class="btn" href="{% url 'edit_hackathon' hackathon.id %}">Редактировать</a>
+        <a class="btn" href="{% url 'hackathon_teams' hackathon.id %}">Список команд</a>
+        <a class="btn" href="{% url 'create_criterion' hackathon.id %}">Добавить критерий</a>
+        <a class="btn" href="{% url 'assign_judge' hackathon.id %}">Назначить жюри</a>
+        <a class="btn" href="{% url 'assign_project' hackathon.id %}">Назначить проект жюри</a>
+        <a class="btn" style="background:#ef4444;" href="{% url 'delete_hackathon' hackathon.id %}">Удалить хакатон</a>
+    </div>
 </div>
 
-<a class="btn" href="{% url 'create_criterion' hackathon.id %}">Добавить критерий</a>
-<a class="btn" href="{% url 'assign_judge' hackathon.id %}">Назначить жюри</a>
-<a class="btn" href="{% url 'assign_project' hackathon.id %}">Назначить проект жюри</a>
-
 <h2>Критерии оценивания</h2>
-
 {% for criterion in criteria %}
-    <div class="card">
-        <h3>{{ criterion.name }}</h3>
-        <p>Максимум: {{ criterion.max_score }}</p>
-        <p>Вес: {{ criterion.weight }}</p>
+    <div class="card" style="margin-bottom: 10px;">
+        <h3 style="margin: 0 0 8px 0;">{{ criterion.name }}</h3>
+        <p style="margin: 0; color: #9ca3af;">Максимум: {{ criterion.max_score }} | Вес: {{ criterion.weight }}</p>
     </div>
 {% empty %}
-    <p>Критерии ещё не созданы.</p>
+    <p style="color: #9ca3af;">Критерии ещё не созданы.</p>
 {% endfor %}
 
 <h2>Жюри</h2>
-
 {% for judge in judges %}
-    <div class="card">
-        <h3>{{ judge.user.full_name }}</h3>
-        <p>{{ judge.user.email }}</p>
+    <div class="card" style="margin-bottom: 10px;">
+        <h3 style="margin: 0 0 4px 0;">{{ judge.user.full_name }}</h3>
+        <p style="margin: 0; color: #9ca3af;">{{ judge.user.email }}</p>
     </div>
 {% empty %}
-    <p>Жюри ещё не назначены.</p>
+    <p style="color: #9ca3af;">Жюри ещё не назначены.</p>
 {% endfor %}
 
 <h2>Назначения проектов</h2>
-
 {% for assignment in assignments %}
-    <div class="card">
-        <p><b>Жюри:</b> {{ assignment.judge.user.full_name }}</p>
-        <p><b>Проект:</b> {{ assignment.project.title }}</p>
-        <p><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
+    <div class="card" style="margin-bottom: 10px;">
+        <p style="margin: 0 0 4px 0;"><b>Жюри:</b> {{ assignment.judge.user.full_name }}</p>
+        <p style="margin: 0 0 4px 0;"><b>Проект:</b> {{ assignment.project.title }}</p>
+        <p style="margin: 0; color: #9ca3af;"><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
     </div>
 {% empty %}
-    <p>Проекты ещё не назначены жюри.</p>
+    <p style="color: #9ca3af;">Проекты ещё не назначены жюри.</p>
 {% endfor %}
 
 <h2>Команды</h2>
-
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
 {% for team in teams %}
-    <div class="card">
-        <h3>{{ team.team_name }}</h3>
-        <p>Капитан: {{ team.captain.full_name }}</p>
-        <p>Ментор: {{ team.mentor.full_name|default:"Не назначен" }}</p>
+    <div style="background: #111827; border: 1px solid #334155; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+        <h3 style="margin: 0; color: #38bdf8;">{{ team.team_name }}</h3>
+        <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Капитан:</b> {{ team.captain.full_name }}</p>
+        <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Ментор:</b> {{ team.mentor.full_name|default:"Не назначен" }}</p>
+        <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Участников:</b> {{ team.members.count }}/{{ hackathon.max_team_size }}</p>
+        <a class="btn" href="{% url 'team_detail' team.id %}" style="margin-top: auto; text-align: center;">Открыть команду</a>
     </div>
 {% empty %}
-    <p>Команд пока нет.</p>
+    <p style="color: #9ca3af;">Команд пока нет.</p>
 {% endfor %}
+</div>
 
 <h2>Проекты</h2>
-
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
 {% for project in projects %}
-    <div class="card">
-        <h3>{{ project.title }}</h3>
-        <p>Команда: {{ project.team.team_name }}</p>
-        <p>{{ project.description|truncatechars:150 }}</p>
+    <div style="background: #111827; border: 1px solid #334155; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+        <h3 style="margin: 0; color: #38bdf8;">{{ project.title }}</h3>
+        <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Команда:</b> {{ project.team.team_name }}</p>
+        <p style="margin: 0; color: #9ca3af; font-size: 14px;">{{ project.description|truncatechars:100 }}</p>
     </div>
 {% empty %}
-    <p>Проектов пока нет.</p>
-<a class="btn" href="{% url 'edit_hackathon' hackathon.id %}">
-    Редактировать хакатон
-</a>
-
-<a class="btn danger" href="{% url 'delete_hackathon' hackathon.id %}">
-    Удалить хакатон
-</a>
-
+    <p style="color: #9ca3af;">Проектов пока нет.</p>
 {% endfor %}
+</div>
+
 {% endblock %}

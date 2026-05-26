@@ -19,6 +19,7 @@ from projects.models import Project
 from judging.models import Criterion, Judge, JudgeAssignment, Score
 from itertools import cycle
 
+from django.db.models import Case, When, IntegerField
 
 def assign_team_mentor(request, team_id):
 
@@ -260,9 +261,20 @@ def participant_dashboard(request):
 
 @role_required(["mentor"])
 def mentor_dashboard(request):
+    status_order = Case(
+        When(hackathon__status="registration", then=0),
+        When(hackathon__status="team_building", then=1),
+        When(hackathon__status="submission", then=2),
+        When(hackathon__status="judging", then=3),
+        When(hackathon__status="finished", then=4),
+        When(hackathon__status="archived", then=5),
+        default=6,
+        output_field=IntegerField(),
+    )
+
     teams = Team.objects.filter(mentor=request.user).select_related(
         "hackathon", "captain"
-    )
+    ).annotate(status_order=status_order).order_by("status_order")
 
     return render(
         request,

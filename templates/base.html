@@ -60,7 +60,7 @@
     {% if messages %}
         {% for message in messages %}
             <div class="message">{{ message }}</div>
-        // {% endfor %}
+         {% endfor %}
     {% endif %}
 
     {% block content %}{% endblock %}
@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Если время вышло
             if (distance < 0) {
                 displayElement.innerHTML = "Этап завершен. Обновите страницу.";
+                setTimeout(() => location.reload(), 2000);
                 timer.classList.add("completed");
                 return;
             }
@@ -110,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
 });
+setInterval(() => location.reload(), 60000);
 </script>
 </body>
 </html>
