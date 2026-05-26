@@ -1,5 +1,7 @@
 from django.utils import timezone
 from .models import Hackathon, HackathonStage
+from projects.models import Project
+from projects.models import calculate_project_score
 
 
 def update_hackathon_status(hackathon):
@@ -31,3 +33,23 @@ def update_hackathon_status(hackathon):
     if hackathon.status != new_status:
         hackathon.status = new_status
         hackathon.save(update_fields=["status"])
+
+
+def get_hackathon_leaderboard(hackathon):
+    leaderboard = []
+
+    projects = Project.objects.filter(team__hackathon=hackathon).select_related("team")
+
+    for project in projects:
+        total_score = calculate_project_score(project)
+
+        leaderboard.append(
+            {"team": project.team, "project": project, "score": total_score}
+        )
+
+    leaderboard.sort(key=lambda x: x["score"], reverse=True)
+
+    for index, item in enumerate(leaderboard, start=1):
+        item["place"] = index
+
+    return leaderboard

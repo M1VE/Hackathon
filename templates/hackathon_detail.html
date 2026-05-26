@@ -92,24 +92,27 @@
             <a class="btn" href="{% url 'site_login' %}">Войти</a>
         </div>
     {% endif %}
+    {% if hackathon.status == 'finished' or hackathon.status == 'archived' %}
 
-    <h2>Открытые команды</h2>
+    <div class="card">
+        <h2>Результаты хакатона</h2>
 
-    {% for team in open_teams %}
-        <div class="card">
-            <h3>{{ team.team_name }}</h3>
-            <p><b>Капитан:</b> {{ team.captain.full_name }}</p>
-            <p><b>Университет:</b> {{ team.captain.university|default:"-" }}</p>
-            <p><b>Ментор:</b> {{ team.mentor.full_name|default:"Не назначен" }}</p>
+        <a class="btn"
+        href="{% url 'leaderboard' hackathon.id %}">
+            View Leaderboard
+        </a>
+    </div>
 
-            {% if user.is_authenticated and user.role == "participant" and is_joined and not user_team %}
-                <a class="btn" href="{% url 'join_open_team' hackathon.id team.id %}">
-                    Вступить в команду
-                </a>
-            {% endif %}
-        </div>
-    {% empty %}
-        <p>Открытых команд пока нет.</p>
-    {% endfor %}
+    {% endif %}
+    <div class="card">
+        <h2>Команды</h2>
+        <p>
+            Посмотреть список всех команд хакатона
+        </p>
+        <a class="btn"
+        href="{% url 'hackathon_teams' hackathon.id %}">
+            Список команд
+        </a>
+    </div>
 
 {% endblock %}

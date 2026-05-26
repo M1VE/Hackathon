@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h1>
+        🏆 {{ hackathon.title }} Leaderboard
+    </h1>
+
+    <p>
+        Итоговые результаты хакатона
+    </p>
+
+    <div style="margin-top: 20px;">
+
+        <a class="btn"
+           href="{% url 'hackathon_detail' hackathon.id %}">
+            ← Назад к хакатону
+        </a>
+
+        <a class="btn"
+           href="{% url 'home' %}">
+            На главную
+        </a>
+
+    </div>
+
+</div>
+
+
+{% if leaderboard %}
+
+    <!-- TOP 3 -->
+
+    <div class="card">
+
+        <h2>🥇 Топ команды</h2>
+
+        {% for item in leaderboard|slice:":3" %}
+
+            <div style="
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 14px;
+                background: rgba(255,255,255,0.05);
+            ">
+
+                <h3>
+
+                    {% if item.place == 1 %}
+                        🥇
+                    {% elif item.place == 2 %}
+                        🥈
+                    {% elif item.place == 3 %}
+                        🥉
+                    {% endif %}
+
+                    #{{ item.place }}
+                    — {{ item.team.team_name }}
+
+                </h3>
+
+                <p>
+                    <b>Проект:</b>
+                    {{ item.project.title }}
+                </p>
+
+                <p>
+                    <b>Баллы:</b>
+                    {{ item.score }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- FULL TABLE -->
+
+    <div class="card">
+
+        <h2>Полный рейтинг</h2>
+
+        <table style="
+            width: 100%;
+            border-collapse: collapse;
+        ">
+
+            <thead>
+
+                <tr style="
+                    background: rgba(255,255,255,0.08);
+                ">
+
+                    <th style="padding: 12px;">Место</th>
+                    <th style="padding: 12px;">Команда</th>
+                    <th style="padding: 12px;">Проект</th>
+                    <th style="padding: 12px;">Баллы</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in leaderboard %}
+
+                <tr>
+
+                    <td style="padding: 12px; text-align: center;">
+                        {{ item.place }}
+                    </td>
+
+                    <td style="padding: 12px;">
+                        {{ item.team.team_name }}
+                    </td>
+
+                    <td style="padding: 12px;">
+                        {{ item.project.title }}
+                    </td>
+
+                    <td style="
+                        padding: 12px;
+                        text-align: center;
+                    ">
+                        {{ item.score }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+{% else %}
+
+    <div class="card">
+
+        <h2>
+            Пока нет результатов
+        </h2>
+
+        <p>
+            Судьи ещё не выставили оценки.
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

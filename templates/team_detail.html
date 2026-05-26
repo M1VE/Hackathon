@@ -34,7 +34,7 @@
         <p>Ссылка на страницу ввода кода:</p>
 
         <div style="background: #0f172a; padding: 12px; border-radius: 10px; border: 1px solid #334155; word-break: break-all;">
-            {{ request.scheme }}://{{ request.get_host }}{% url 'join_team_by_code_form' team.hackathon.id %}
+            {{ request.scheme }}://{{ request.get_host }}{% url 'join_team_by_code' team.hackathon.id %}
         </div>
     </div>
 {% endif %}
@@ -52,30 +52,25 @@
     <p>В команде пока нет участников.</p>
 {% endfor %}
 
-{% if request.user == team.captain %}
-    <h2>Назначить / изменить ментора</h2>
+{% if user.role == 'organizer' %}
 
-    <form method="post" action="{% url 'set_team_mentor' team.id %}" class="form">
-        {% csrf_token %}
+<div class="card">
 
-        <label>Ментор</label>
+    <h2>Управление ментором</h2>
 
-        <select name="mentor_id" required>
-            {% for mentor in mentors %}
-                <option value="{{ mentor.id }}">
-                    {{ mentor.full_name }} ({{ mentor.email }})
-                </option>
-            {% empty %}
-                <option value="">
-                    Нет доступных менторов
-                </option>
-            {% endfor %}
-        </select>
+    <p>
+        Назначить или изменить ментора команды
+    </p>
 
-        <button class="btn" type="submit">
-            Назначить ментора
-        </button>
-    </form>
+    <a class="btn"
+       href="{% url 'assign_team_mentor' team.id %}">
+
+        Назначить ментора
+
+    </a>
+
+</div>
+
 {% endif %}
 
 <h2>Проект команды</h2>

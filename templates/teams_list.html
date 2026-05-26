@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h1>
+        👥 Команды — {{ hackathon.title }}
+    </h1>
+    {% if user.role == 'organizer' %}
+
+    <div style="margin-top: 20px;">
+
+        <a class="btn"
+           href="{% url 'auto_assign_mentors' hackathon.id %}">
+
+            Автораспределение менторов
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+
+        <a class="btn"
+           href="{% url 'hackathon_detail' hackathon.id %}">
+            ← Назад к хакатону
+        </a>
+
+        <a class="btn"
+           href="{% url 'home' %}">
+            На главную
+        </a>
+
+    </div>
+
+</div>
+
+
+{% if teams %}
+
+    {% for team in teams %}
+
+        <div class="card">
+
+            <h2>
+                {{ team.team_name }}
+            </h2>
+
+            <p>
+                <b>Капитан:</b>
+                {{ team.captain.full_name }}
+            </p>
+
+            <p>
+                <b>Университет:</b>
+                {{ team.captain.university|default:"-" }}
+            </p>
+
+            <p>
+                <b>Ментор:</b>
+
+                {% if team.mentor %}
+                    {{ team.mentor.full_name }}
+                {% else %}
+                    Не назначен
+                {% endif %}
+            </p>
+
+
+            <p>
+
+                <b>Статус:</b>
+
+                {% if team.is_open %}
+
+                    <span style="color: lightgreen;">
+                        OPEN
+                    </span>
+
+                {% else %}
+
+                    <span style="color: tomato;">
+                        CLOSED
+                    </span>
+
+                {% endif %}
+
+            </p>
+
+            <a class="btn"
+               href="{% url 'team_detail' team.id %}">
+                Открыть команду
+            </a>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="card">
+
+        <h2>
+            Команд пока нет
+        </h2>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}
