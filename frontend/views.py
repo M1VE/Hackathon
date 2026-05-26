@@ -222,13 +222,31 @@ def dashboard(request):
 
 @role_required(["participant"])
 def participant_dashboard(request):
+    from django.db.models import Case, When, IntegerField
+
     participations = HackathonParticipant.objects.filter(
         user=request.user
     ).select_related("hackathon")
 
+    hackathons = sorted(
+        [p.hackathon for p in participations],
+        key=lambda h: (h.status in ["archived", "finished"]),
+    )
+
+    status_order = Case(
+        When(team__hackathon__status="registration", then=0),
+        When(team__hackathon__status="team_building", then=1),
+        When(team__hackathon__status="submission", then=2),
+        When(team__hackathon__status="judging", then=3),
+        When(team__hackathon__status="finished", then=4),
+        When(team__hackathon__status="archived", then=5),
+        default=6,
+        output_field=IntegerField(),
+    )
+
     teams = TeamMember.objects.filter(user=request.user).select_related(
         "team", "team__hackathon"
-    )
+    ).annotate(status_order=status_order).order_by("status_order")
 
     return render(
         request,
@@ -236,6 +254,7 @@ def participant_dashboard(request):
         {
             "participations": participations,
             "teams": teams,
+            "hackathons": hackathons,
         },
     )
 
@@ -376,7 +395,7 @@ def join_hackathon(request, pk):
     hackathon = get_object_or_404(Hackathon, pk=pk)
     update_hackathon_status(hackathon)
 
-    if hackathon.status not in ["registration", "team_building"]:
+    if hackathon.status not in ["registration"]:
         messages.error(request, "Регистрация на этот хакатон сейчас закрыта.")
         return redirect("hackathon_detail", pk=pk)
 
@@ -386,6 +405,14 @@ def join_hackathon(request, pk):
         )
         return redirect("hackathon_detail", pk=pk)
 
+    if hackathon.format == "intra":
+        organizer_university = hackathon.organizer.university
+        if organizer_university and request.user.university != organizer_university:
+            messages.error(
+                request,
+                "Этот хакатон внутривузовский. Участвовать могут только студенты университета-организатора.",
+            )
+            return redirect("hackathon_detail", pk=pk)
     HackathonParticipant.objects.get_or_create(hackathon=hackathon, user=request.user)
 
     messages.success(request, "Вы зарегистрировались на хакатон.")
@@ -672,6 +699,21 @@ def create_team(request, pk):
     if request.method == "POST":
         team_name = request.POST.get("team_name")
 
+        # Проверка: не превышено ли максимальное число команд по участникам
+        # (капитан = 1 участник, минимум должен быть достижим)
+        total_participants = HackathonParticipant.objects.filter(
+            hackathon=hackathon
+        ).count()
+        existing_teams = Team.objects.filter(hackathon=hackathon).count()
+
+        if existing_teams * hackathon.min_team_size >= total_participants:
+            messages.error(
+                request,
+                f"Нельзя создать команду: недостаточно свободных участников. "
+                f"Минимум в команде: {hackathon.min_team_size}."
+            )
+            return redirect("hackathon_detail", pk=pk)
+
         team = Team.objects.create(
             hackathon=hackathon,
             team_name=team_name,
@@ -681,7 +723,7 @@ def create_team(request, pk):
 
         TeamMember.objects.create(team=team, user=request.user, role_in_team="captain")
 
-        messages.success(request, "Команда создана.")
+        messages.success(request, f"Команда создана. Максимум участников: {hackathon.max_team_size}.")
         return redirect("team_detail", team_id=team.id)
 
     return render(
@@ -689,6 +731,8 @@ def create_team(request, pk):
         "create_team.html",
         {
             "hackathon": hackathon,
+            "min_team_size": hackathon.min_team_size,
+            "max_team_size": hackathon.max_team_size,
         },
     )
 

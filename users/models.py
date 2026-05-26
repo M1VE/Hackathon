@@ -37,7 +37,7 @@ class User(AbstractUser):
 
     # Согласие на автоматический подбор в команду
     is_open_for_teaming = models.BooleanField(default=False)
-
+    wins = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "full_name"]
 

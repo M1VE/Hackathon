@@ -79,11 +79,15 @@
                         </a>
                     {% endif %}
                 </div>
-            {% else %}
+                {% else %}
                 <div style="max-width: 650px; margin: 0 auto 20px auto; text-align: center;">
-                    <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
-                        Зарегистрироваться на хакатон
-                    </a>
+                    {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
+                        <p style="color: #ef4444;">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
+                    {% else %}
+                        <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
+                            Зарегистрироваться на хакатон
+                        </a>
+                    {% endif %}
                 </div>
             {% endif %}
 
@@ -97,10 +101,14 @@
                     <a class="btn" href="{% url 'join_team_by_code' hackathon.id %}">
                         Добавиться в команду по mentor code
                     </a>
-                {% else %}
-                    <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
-                        Зарегистрироваться на хакатон
-                    </a>
+                    {% else %}
+                    {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
+                        <p style="color: #ef4444;">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
+                    {% else %}
+                        <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
+                            Зарегистрироваться на хакатон
+                        </a>
+                    {% endif %}
                 {% endif %}
             </div>
         {% endif %}

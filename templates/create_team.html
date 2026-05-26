@@ -2,7 +2,9 @@
 
 {% block content %}
 <h1>Создать команду</h1>
-
+<p style="color: #9ca3af; margin-bottom: 20px;">
+    Размер команды: минимум <b style="color:#fff;">{{ min_team_size }}</b>, максимум <b style="color:#fff;">{{ max_team_size }}</b> участников.
+</p>
 <form method="post" class="form">
     {% csrf_token %}
 
