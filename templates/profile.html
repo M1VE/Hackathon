@@ -101,7 +101,7 @@
             {{ profile_user.username|slice:":2"|upper }}
         </div>
         <div class="profile-info">
-            <h1>{{ profile_user.first_name }} {{ profile_user.last_name|default:profile_user.username }}</h1>
+            <h1>{{ profile_user.first_name }} {{ profile_user.last_name|default:profile_user.full_name }}</h1>
             <p style="color: #9ca3af; margin: 0 0 10px 0;">@{{ profile_user.username }}</p>
             {% if profile_user.role %}
                 <span class="role-badge">{{ profile_user.role }}</span>

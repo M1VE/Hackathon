@@ -123,7 +123,7 @@ def register_view(request):
 
     if request.method == "POST":
         email = request.POST.get("email")
-        username = request.POST.get("username")
+        username = email
         full_name = request.POST.get("full_name")
         password = request.POST.get("password")
         role = request.POST.get("role")
@@ -152,12 +152,11 @@ def register_view(request):
 
         user = User.objects.create_user(
             email=email,
-            username=username,
+            username=email,
             full_name=full_name,
             password=password,
             role=role,
             university=university,
-            is_open_for_teaming=request.POST.get("is_open_for_teaming") == "on",
         )
 
         login(request, user)
@@ -671,7 +670,14 @@ def create_team(request, pk):
 
     if request.method == "POST":
         team_name = request.POST.get("team_name")
+        existing_team = Team.objects.filter(
+            team_name__iexact=team_name, hackathon=hackathon
+        ).exists()
 
+        if existing_team:
+            messages.error(request, "Команда с таким названием уже существует.")
+
+            return redirect("create_team", pk=pk)
         team = Team.objects.create(
             hackathon=hackathon,
             team_name=team_name,
@@ -693,85 +699,54 @@ def create_team(request, pk):
     )
 
 
+@login_required
 @role_required(["participant"])
-def create_random_team(request, pk):
+def join_random_team(request, pk):
+
     hackathon = get_object_or_404(Hackathon, pk=pk)
+
     update_hackathon_status(hackathon)
 
-    if hackathon.status not in ["team_building", "registration"]:
-        messages.error(request, "Сейчас нельзя создавать команды.")
-        return redirect("hackathon_detail", pk=pk)
-
-    if not hackathon.allow_random_teaming:
-        messages.error(
-            request, "Случайное формирование команд отключено для этого хакатона."
-        )
-        return redirect("hackathon_detail", pk=pk)
-
+    # Проверка регистрации
     is_registered = HackathonParticipant.objects.filter(
         hackathon=hackathon, user=request.user
     ).exists()
 
     if not is_registered:
         messages.error(request, "Сначала зарегистрируйтесь на хакатон.")
+
         return redirect("hackathon_detail", pk=pk)
 
-    if not request.user.is_open_for_teaming:
-        messages.error(request, "Включите согласие на случайный подбор в профиле.")
-        return redirect("hackathon_detail", pk=pk)
-
+    # Проверка что user не в команде
     already_in_team = TeamMember.objects.filter(
         team__hackathon=hackathon, user=request.user
     ).exists()
 
     if already_in_team:
-        messages.error(request, "Вы уже состоите в команде этого хакатона.")
+        messages.error(request, "Вы уже состоите в команде.")
+
         return redirect("hackathon_detail", pk=pk)
 
-    if not request.user.university:
-        messages.error(request, "Для случайного подбора нужно указать университет.")
-        return redirect("hackathon_detail", pk=pk)
+    # Ищем открытые команды
+    open_teams = Team.objects.filter(hackathon=hackathon, is_open_for_random_join=True)
 
-    candidates = (
-        User.objects.filter(
-            role="participant",
-            is_open_for_teaming=True,
-            university=request.user.university,
-            hackathon_participations__hackathon=hackathon,
-        )
-        .exclude(id=request.user.id)
-        .exclude(team_memberships__team__hackathon=hackathon)
-        .distinct()
+    # Если открытых нет
+    if not open_teams.exists():
+        messages.warning(request, "Нет открытых команд. Создайте собственную команду.")
+
+        return redirect("create_team", pk=pk)
+
+    # Находим команду с наименьшим количеством участников
+    selected_team = min(open_teams, key=lambda team: team.members.count())
+
+    # Добавляем участника
+    TeamMember.objects.create(
+        team=selected_team, user=request.user, role_in_team="member"
     )
 
-    candidates = list(candidates)
-    random.shuffle(candidates)
+    messages.success(request, f"Вы были добавлены в команду {selected_team.team_name}")
 
-    needed_members = hackathon.min_team_size - 1
-
-    if len(candidates) < needed_members:
-        messages.error(
-            request,
-            "Недостаточно свободных участников из вашего университета для случайной команды.",
-        )
-        return redirect("hackathon_detail", pk=pk)
-
-    selected = candidates[: hackathon.max_team_size - 1]
-
-    team = Team.objects.create(
-        hackathon=hackathon,
-        team_name=f"Random Team {request.user.username}",
-        captain=request.user,
-        is_open_for_random_join=True,
-    )
-
-    TeamMember.objects.create(team=team, user=request.user, role_in_team="captain")
-
-    for user in selected:
-        TeamMember.objects.create(team=team, user=user, role_in_team="member")
-
-    messages.success(request, "Случайная команда создана.")
-    return redirect("team_detail", team_id=team.id)
+    return redirect("team_detail", team_id=selected_team.id)
 
 
 @role_required(["participant", "mentor", "organizer"])
@@ -798,52 +773,46 @@ def team_detail(request, team_id):
     )
 
 
+@login_required
 @role_required(["participant"])
-def join_open_team(request, team_id):
-    team = get_object_or_404(Team, id=team_id)
-    update_hackathon_status(team.hackathon)
+def join_open_team(request, pk, team_id):
 
-    if team.hackathon.status not in ["team_building", "registration"]:
-        messages.error(request, "Сейчас нельзя вступать в команды.")
-        return redirect("hackathon_detail", pk=team.hackathon.id)
+    hackathon = get_object_or_404(Hackathon, id=pk)
 
+    team = get_object_or_404(Team, id=team_id, hackathon=hackathon)
+
+    # Проверка открыта ли команда
     if not team.is_open_for_random_join:
-        messages.error(request, "Эта команда не открыта для вступления.")
-        return redirect("hackathon_detail", pk=team.hackathon.id)
+        messages.error(request, "Команда закрыта для вступления.")
 
-    is_registered = HackathonParticipant.objects.filter(
-        hackathon=team.hackathon, user=request.user
-    ).exists()
+        return redirect("hackathon_teams", hackathon.id)
 
-    if not is_registered:
+    # Проверка регистрации на хакатон
+    participation = HackathonParticipant.objects.filter(
+        hackathon=hackathon, user=request.user
+    ).first()
+
+    if not participation:
         messages.error(request, "Сначала зарегистрируйтесь на хакатон.")
-        return redirect("hackathon_detail", pk=team.hackathon.id)
 
-    if request.user.university != team.captain.university:
-        messages.error(
-            request,
-            "В эту команду могут вступать только участники из того же университета.",
-        )
-        return redirect("hackathon_detail", pk=team.hackathon.id)
+        return redirect("hackathon_detail", hackathon.id)
 
-    already_in_team = TeamMember.objects.filter(
-        team__hackathon=team.hackathon, user=request.user
+    # Проверка есть ли уже команда
+    existing_member = TeamMember.objects.filter(
+        user=request.user, team__hackathon=hackathon
     ).exists()
 
-    if already_in_team:
-        messages.error(request, "Вы уже состоите в команде этого хакатона.")
-        return redirect("hackathon_detail", pk=team.hackathon.id)
+    if existing_member:
+        messages.error(request, "Вы уже состоите в команде.")
 
-    current_count = TeamMember.objects.filter(team=team).count()
+        return redirect("hackathon_teams", hackathon.id)
 
-    if current_count >= team.hackathon.max_team_size:
-        messages.error(request, "Команда уже заполнена.")
-        return redirect("hackathon_detail", pk=team.hackathon.id)
+    # Добавление в команду
+    TeamMember.objects.create(team=team, user=request.user, role_in_team="Member")
 
-    TeamMember.objects.create(team=team, user=request.user, role_in_team="member")
+    messages.success(request, f"Вы вступили в команду {team.team_name}")
 
-    messages.success(request, "Вы вступили в команду.")
-    return redirect("team_detail", team_id=team.id)
+    return redirect("team_detail", team.id)
 
 
 @role_required(["participant", "mentor"])

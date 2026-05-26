@@ -6,8 +6,6 @@
 <form method="post" class="form">
     {% csrf_token %}
 
-     <label>Имя пользователя</label>
-    <input type="text" name="username" required>
 
     <label>Полное имя</label>
     <input type="text" name="full_name" required>
@@ -34,10 +32,6 @@
         <option value="mentor">Ментор</option>
     </select>
 
-    <label>
-        <input type="checkbox" name="is_open_for_teaming">
-        Я согласен на случайный подбор в команду
-    </label>
 
     <button class="btn" type="submit">
         Зарегистрироваться
