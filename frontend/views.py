@@ -701,7 +701,6 @@ def create_team(request, pk):
             team_name__iexact=team_name, hackathon=hackathon
         ).exists()
 
-<<<<<<< HEAD
         # Проверка: не превышено ли максимальное число команд по участникам
         # (капитан = 1 участник, минимум должен быть достижим)
         total_participants = HackathonParticipant.objects.filter(
@@ -717,12 +716,10 @@ def create_team(request, pk):
             )
             return redirect("hackathon_detail", pk=pk)
 
-=======
         if existing_team:
             messages.error(request, "Команда с таким названием уже существует.")
 
             return redirect("create_team", pk=pk)
->>>>>>> origin/arafat_integration
         team = Team.objects.create(
             hackathon=hackathon,
             team_name=team_name,
