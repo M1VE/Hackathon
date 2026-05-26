@@ -10,25 +10,26 @@ urlpatterns = [
         views.leaderboard_view,
         name="leaderboard",
     ),
-    
     path(
-        'hackathons/<int:hackathon_id>/teams/',
+        "hackathons/<int:hackathon_id>/teams/",
         views.hackathon_teams_view,
-        name='hackathon_teams'
+        name="hackathon_teams",
     ),
-    
     path(
-        'hackathons/<int:hackathon_id>/auto-assign-mentors/',
+        "hackathons/<int:hackathon_id>/teams/<int:team_id>/join/",
+        views.join_open_team,
+        name="join_open_team",
+    ),
+    path(
+        "hackathons/<int:hackathon_id>/auto-assign-mentors/",
         views.auto_assign_mentors,
-        name='auto_assign_mentors'
+        name="auto_assign_mentors",
     ),
-    
     path(
-        'teams/<int:team_id>/assign-mentor/',
+        "teams/<int:team_id>/assign-mentor/",
         views.assign_team_mentor,
-        name='assign_team_mentor'
+        name="assign_team_mentor",
     ),
-    
     # Авторизация и регистрация
     path("register/", views.register_view, name="site_register"),
     path("login/", views.login_view, name="site_login"),
@@ -50,9 +51,9 @@ urlpatterns = [
     # Команды
     path("hackathons/<int:pk>/create-team/", views.create_team, name="create_team"),
     path(
-        "hackathons/<int:pk>/create-random-team/",
-        views.create_random_team,
-        name="create_random_team",
+        "hackathons/<int:pk>/join-random-team/",
+        views.join_random_team,
+        name="join_random_team",
     ),
     path(
         "hackathons/<int:pk>/join-team-by-code/",

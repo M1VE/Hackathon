@@ -12,8 +12,14 @@ class UniversityAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = (
-        "id", "username", "email", "full_name", "role",
-        "university", "is_open_for_teaming", "is_active", "is_staff"
+        "id",
+        "username",
+        "email",
+        "full_name",
+        "role",
+        "university",
+        "is_active",
+        "is_staff",
     )
     list_filter = ("role", "university", "is_active", "is_staff")
     search_fields = ("username", "email", "full_name")
@@ -21,24 +27,36 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
         ("Основное", {"fields": ("username", "password")}),
-        ("Профиль", {"fields": ("email", "full_name", "role", "university", "is_open_for_teaming")}),
+        (
+            "Профиль",
+            {
+                "fields": (
+                    "email",
+                    "full_name",
+                    "role",
+                    "university",
+                )
+            },
+        ),
         ("Доступ", {"fields": ("is_active", "is_staff", "is_superuser")}),
     )
 
     add_fieldsets = (
-        ("Создание пользователя", {
-            "classes": ("wide",),
-            "fields": (
-                "username",
-                "email",
-                "full_name",
-                "role",
-                "university",
-                "is_open_for_teaming",
-                "password1",
-                "password2",
-                "is_active",
-                "is_staff",
-            ),
-        }),
+        (
+            "Создание пользователя",
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "email",
+                    "full_name",
+                    "role",
+                    "university",
+                    "password1",
+                    "password2",
+                    "is_active",
+                    "is_staff",
+                ),
+            },
+        ),
     )

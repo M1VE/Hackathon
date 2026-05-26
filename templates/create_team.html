@@ -2,8 +2,19 @@
 
 {% block content %}
 <h1>Создать команду</h1>
+<<<<<<< HEAD
 <p style="color: #9ca3af; margin-bottom: 20px;">
     Размер команды: минимум <b style="color:#fff;">{{ min_team_size }}</b>, максимум <b style="color:#fff;">{{ max_team_size }}</b> участников.
+=======
+<p style="
+    color: #facc15;
+    margin-bottom: 20px;
+">
+
+    Если команда не наберёт минимальное количество участников,
+    она может быть не допущена к хакатону.
+
+>>>>>>> origin/arafat_integration
 </p>
 <form method="post" class="form">
     {% csrf_token %}
@@ -11,16 +22,6 @@
     <label>Название команды</label>
     <input type="text" name="team_name" required>
 
-    <label>Ментор</label>
-    <select name="mentor">
-        <option value="">Без ментора</option>
-
-        {% for mentor in mentors %}
-            <option value="{{ mentor.id }}">
-                {{ mentor.full_name }} ({{ mentor.email }})
-            </option>
-        {% endfor %}
-    </select>
 
     <div class="checkbox-group" style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; padding: 5px 0; cursor: pointer;">
         <label for="id_random_join" style="margin: 0; cursor: pointer; display: inline-block; width: auto; font-weight: 500; color: #e2e8f0;">

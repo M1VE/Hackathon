@@ -32,11 +32,14 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="users"
+        related_name="users",
     )
 
+<<<<<<< HEAD
     # Согласие на автоматический подбор в команду
     is_open_for_teaming = models.BooleanField(default=False)
+=======
+>>>>>>> origin/arafat_integration
     wins = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "full_name"]

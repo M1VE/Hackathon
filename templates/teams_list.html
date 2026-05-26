@@ -73,16 +73,46 @@
             <p>
 
                 <b>Статус:</b>
+                {% if user.is_authenticated and user.role == "participant" %}
 
-                {% if team.is_open %}
+                    {% if team.is_open_for_random_join %}
 
-                    <span style="color: lightgreen;">
+                        <a class="btn"
+                        href="{% url 'join_open_team' hackathon.id team.id %}"
+                        style="margin-top: 10px;">
+
+                            Вступить в команду
+
+                        </a>
+
+                    {% else %}
+
+                        <p style="
+                            color: #ef4444;
+                            margin-top: 10px;
+                            font-weight: bold;
+                        ">
+                            Команда закрыта
+                        </p>
+
+                    {% endif %}
+
+                {% endif %}
+                {% if team.is_open_for_random_join %}
+
+                    <span style="
+                        color: lightgreen;
+                        font-weight: bold;
+                    ">
                         OPEN
                     </span>
 
                 {% else %}
 
-                    <span style="color: tomato;">
+                    <span style="
+                        color: tomato;
+                        font-weight: bold;
+                    ">
                         CLOSED
                     </span>
 
