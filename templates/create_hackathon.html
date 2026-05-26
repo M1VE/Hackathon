@@ -34,15 +34,19 @@
     <label>Максимум участников</label>
     <input type="number" name="max_team_size" value="5">
 
-    <label>
-        <input type="checkbox" name="allow_random_teaming" checked>
-        Разрешить случайный добор
-    </label>
+    <div class="checkbox-group" style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; padding: 5px 0; cursor: pointer;">
+        <label for="id_random" style="margin: 0; cursor: pointer; display: inline-block; width: auto; font-weight: 500; color: #e2e8f0;">
+            Разрешить случайный добор
+        </label>
+        <input type="checkbox" name="allow_random_teaming" id="id_random" checked style="width: auto; margin: 0 0 0 10px; cursor: pointer; transform: scale(1.2);">
+    </div>
 
-    <label>
-        <input type="checkbox" name="allow_mentor_assignment" checked>
-        Разрешить менторов
-    </label>
+    <div class="checkbox-group" style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; padding: 5px 0; cursor: pointer;">
+        <label for="id_mentors" style="margin: 0; cursor: pointer; display: inline-block; width: auto; font-weight: 500; color: #e2e8f0;">
+            Разрешить менторов
+        </label>
+        <input type="checkbox" name="allow_mentor_assignment" id="id_mentors" checked style="width: auto; margin: 0 0 0 10px; cursor: pointer; transform: scale(1.2);">
+    </div>
 
     <label>PDF / файл правил</label>
     <input type="file" name="rules_file">
@@ -50,7 +54,7 @@
     <label>Картинка хакатона</label>
     <input type="file" name="cover_image" accept="image/*">
 
-    <h3>Дедлайны</h3>
+    <h3 style="margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px;">Дедлайны</h3>
 
     <label>Регистрация до</label>
     <input type="datetime-local" name="registration_deadline">
@@ -67,6 +71,6 @@
     <label>Публикация результатов</label>
     <input type="datetime-local" name="results_deadline">
 
-    <button class="btn" type="submit">Создать</button>
+    <button class="btn" type="submit" style="margin-top: 25px;">Создать</button>
 </form>
 {% endblock %}

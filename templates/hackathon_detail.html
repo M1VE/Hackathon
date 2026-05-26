@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="card">
+    <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px; box-sizing: border-box;">
         <h1>{{ hackathon.title }}</h1>
 
         {% if hackathon.cover_image %}
-            <img src="{{ hackathon.cover_image.url }}" alt="Hackathon cover" style="max-width: 100%; border-radius: 14px;">
+            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 15px;">
+                <img src="{{ hackathon.cover_image.url }}" alt="Hackathon cover" style="height: 300px; width: 300; object-fit: contain; border-radius: 14px;">
+            </div>
         {% endif %}
 
         <p>{{ hackathon.description }}</p>
@@ -13,12 +15,27 @@
         <p><b>Формат:</b> {{ hackathon.format }}</p>
         <p><b>Статус:</b> {{ hackathon.status }}</p>
         <p><b>Команда:</b> {{ hackathon.min_team_size }}–{{ hackathon.max_team_size }} участников</p>
+        
+        {% load hackathon_tags %}
+
+        {% with next_deadline=hackathon|get_current_deadline %}
+            {% if next_deadline %}
+                <div class="timer-box" data-countdown="{{ next_deadline }}" style="margin: 20px 0; padding: 15px; background: #1f2937; border-radius: 8px; border: 1px solid #374151;">
+                    <span class="timer-label" style="color: #9ca3af;">До конца этапа ({{ hackathon|get_current_stage_title }}):</span>
+                    <span class="timer-countdown" style="font-weight: bold; color: #fff; margin-left: 5px;">Считаем...</span>
+                </div>
+            {% else %}
+                <div class="timer-box completed" style="margin: 20px 0; padding: 15px; background: #1f2937; border-radius: 8px; border: 1px solid #374151;">
+                    <span class="timer-countdown" style="color: #10b981; font-weight: bold;">Хакатон завершен 🎉</span>
+                </div>
+            {% endif %}
+        {% endwith %}
 
         {% if attachments %}
             <h3>Файлы хакатона</h3>
             {% for attachment in attachments %}
                 <p>
-                    <a href="{{ attachment.file.url }}" target="_blank">
+                    <a href="{{ attachment.file.url }}" target="_blank" style="color: #38f88b; text-decoration: underline; font-weight: bold;">
                         Скачать: {{ attachment.title|default:attachment.file.name }}
                     </a>
                 </p>
@@ -29,7 +46,7 @@
     {% if user.is_authenticated %}
         {% if user.role == "participant" %}
             {% if is_joined %}
-                <div class="card">
+                <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
                     <p class="success">Вы зарегистрированы на этот хакатон.</p>
 
                     {% if user_team %}
@@ -63,13 +80,15 @@
                     {% endif %}
                 </div>
             {% else %}
-                <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
-                    Зарегистрироваться на хакатон
-                </a>
+                <div style="max-width: 650px; margin: 0 auto 20px auto; text-align: center;">
+                    <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
+                        Зарегистрироваться на хакатон
+                    </a>
+                </div>
             {% endif %}
 
         {% elif user.role == "mentor" %}
-            <div class="card">
+            <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
                 <h2>Ментор</h2>
 
                 {% if is_joined %}
@@ -87,32 +106,108 @@
         {% endif %}
 
     {% else %}
-        <div class="card">
+        <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
             <p>Чтобы зарегистрироваться на хакатон, войдите в аккаунт.</p>
             <a class="btn" href="{% url 'site_login' %}">Войти</a>
         </div>
     {% endif %}
     {% if hackathon.status == 'finished' or hackathon.status == 'archived' %}
 
-    <div class="card">
-        <h2>Результаты хакатона</h2>
+        <div class="card">
 
-        <a class="btn"
-        href="{% url 'leaderboard' hackathon.id %}">
-            View Leaderboard
-        </a>
-    </div>
+            <h2>
+                Результаты хакатона
+            </h2>
+
+            <a class="btn"
+            href="{% url 'leaderboard' hackathon.id %}">
+
+                View Leaderboard
+
+            </a>
+
+        </div>
 
     {% endif %}
+
     <div class="card">
-        <h2>Команды</h2>
+
+        <h2>
+            Команды
+        </h2>
+
         <p>
             Посмотреть список всех команд хакатона
         </p>
+
         <a class="btn"
         href="{% url 'hackathon_teams' hackathon.id %}">
+
             Список команд
+
         </a>
+
     </div>
 
+    <div style="max-width: 650px; margin: 30px auto 0 auto;">
+
+        <h2>
+            Открытые команды
+        </h2>
+
+        {% for team in open_teams %}
+
+            <div class="card"
+                style="margin-bottom: 15px; padding: 20px;">
+
+                <h3>
+                    {{ team.team_name }}
+                </h3>
+
+                <p>
+                    <b>Капитан:</b>
+                    {{ team.captain.full_name }}
+                </p>
+
+                <p>
+                    <b>Университет:</b>
+                    {{ team.captain.university|default:"-" }}
+                </p>
+
+                <p>
+                    <b>Ментор:</b>
+
+                    {% if team.mentor %}
+
+                        {{ team.mentor.full_name }}
+
+                    {% else %}
+
+                        Не назначен
+
+                    {% endif %}
+                </p>
+
+                {% if user.is_authenticated and user.role == "participant" and is_joined and not user_team %}
+
+                    <a class="btn"
+                    href="{% url 'join_open_team' hackathon.id team.id %}">
+
+                        Вступить в команду
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+
+            <p>
+                Открытых команд пока нет.
+            </p>
+
+        {% endfor %}
+
+    </div>
 {% endblock %}

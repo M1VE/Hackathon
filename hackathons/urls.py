@@ -1,9 +1,13 @@
-from rest_framework.routers import DefaultRouter
-from .views import HackathonViewSet, HackathonStageViewSet, HackathonParticipantViewSet
+from django.urls import path
+from .views import HackathonListView, HackathonCreateView, HackathonDetailView
 
-router = DefaultRouter()
-router.register(r"hackathons", HackathonViewSet, basename="hackathon")
-router.register(r"stages", HackathonStageViewSet, basename="hackathon-stage")
-router.register(r"participants", HackathonParticipantViewSet, basename="hackathon-participant")
+urlpatterns = [
+    # Список хакатонов (/hackathons/)
+    path('', HackathonListView.as_view(), name='hackathon_list'),
 
-urlpatterns = router.urls
+    # Создание хакатона (/hackathons/create/)
+    path('create/', HackathonCreateView.as_view(), name='create_hackathon'),
+
+    # Детальная страница конкретного хакатона (/hackathons/ID/)
+    path('<int:pk>/', HackathonDetailView.as_view(), name='hackathon_detail'),
+]

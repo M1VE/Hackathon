@@ -1,8 +1,13 @@
-from rest_framework.routers import DefaultRouter
-from .views import TeamViewSet, TeamMemberViewSet
+from django.urls import path
+from .views import team_detail_view, auto_fill
 
-router = DefaultRouter()
-router.register(r"", TeamViewSet, basename="team")
-router.register(r"members", TeamMemberViewSet, basename="team-member")
-
-urlpatterns = router.urls
+urlpatterns = [
+    # Маршрут для страницы команды (/teams/ID/)
+    path('<int:pk>/', team_detail_view, name='team_detail'),
+    
+    # Маршрут для кнопки автодобора
+    path('<int:pk>/auto-fill/', auto_fill, name='team_auto_fill'),
+    
+    # Заглушка для инвайт-кодов, чтобы шаблон не падал по NoReverseMatch
+    path('join-by-code/', team_detail_view, name='join_team_by_code_form'),
+]

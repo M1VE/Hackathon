@@ -19,69 +19,36 @@ from projects.models import Project
 from judging.models import Criterion, Judge, JudgeAssignment, Score
 from itertools import cycle
 
+
 def assign_team_mentor(request, team_id):
 
-    team = get_object_or_404(
-        Team,
-        id=team_id
-    )
+    team = get_object_or_404(Team, id=team_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
+        mentor_id = request.POST.get("mentor_id")
 
-        mentor_id = request.POST.get(
-            'mentor_id'
-        )
-
-        mentor = get_object_or_404(
-            User,
-            id=mentor_id,
-            role='mentor'
-        )
+        mentor = get_object_or_404(User, id=mentor_id, role="mentor")
 
         team.mentor = mentor
         team.save()
 
-        return redirect(
-            'team_detail',
-            team.id
-        )
+        return redirect("team_detail", team.id)
 
-    mentors = User.objects.filter(
-        role='mentor'
-    )
+    mentors = User.objects.filter(role="mentor")
 
     return render(
-        request,
-        'assign_team_mentor.html',
-        {
-            'team': team,
-            'mentors': mentors
-        }
+        request, "assign_team_mentor.html", {"team": team, "mentors": mentors}
     )
 
 
 def hackathon_teams_view(request, hackathon_id):
 
-    hackathon = get_object_or_404(
-        Hackathon,
-        id=hackathon_id
-    )
+    hackathon = get_object_or_404(Hackathon, id=hackathon_id)
 
-    teams = Team.objects.filter(
-        hackathon=hackathon
-    ).select_related(
-        'captain',
-        'mentor'
-    )
+    teams = Team.objects.filter(hackathon=hackathon).select_related("captain", "mentor")
 
-    return render(
-        request,
-        'teams_list.html',
-        {
-            'hackathon': hackathon,
-            'teams': teams
-        }
-    )
+    return render(request, "teams_list.html", {"hackathon": hackathon, "teams": teams})
+
 
 def leaderboard_view(request, hackathon_id):
 
@@ -116,20 +83,34 @@ def role_required(allowed_roles):
 
 
 def home(request):
-    hackathons = (
-        Hackathon.objects.filter(is_active=True)
+
+    # Получаем все хакатоны кроме draft
+    all_hackathons = Hackathon.objects.exclude(status="draft").order_by("-created_at")
+
+    # Обновляем статусы
+    for hackathon in all_hackathons:
+        update_hackathon_status(hackathon)
+
+    # Активные хакатоны
+    active_hackathons = (
+        Hackathon.objects.filter(status__in=["active", "registration"], is_active=True)
         .exclude(status="draft")
         .order_by("-created_at")[:6]
     )
 
-    for hackathon in hackathons:
-        update_hackathon_status(hackathon)
+    # Завершённые / архивные
+    past_hackathons = (
+        Hackathon.objects.filter(status__in=["finished", "archived"])
+        .exclude(status="draft")
+        .order_by("-created_at")[:6]
+    )
 
     return render(
         request,
         "home.html",
         {
-            "hackathons": hackathons,
+            "active_hackathons": active_hackathons,
+            "past_hackathons": past_hackathons,
         },
     )
 
@@ -1065,42 +1046,27 @@ def score_project(request, project_id):
             "existing_scores": existing_scores,
         },
     )
-    
+
+
 @role_required(["organizer"])
 def auto_assign_mentors(request, hackathon_id):
 
-    hackathon = get_object_or_404(
-        Hackathon,
-        id=hackathon_id
-    )
+    hackathon = get_object_or_404(Hackathon, id=hackathon_id)
 
-    teams = Team.objects.filter(
-        hackathon=hackathon,
-        mentor__isnull=True
-    )
+    teams = Team.objects.filter(hackathon=hackathon, mentor__isnull=True)
 
-    mentors = User.objects.filter(
-        role='mentor'
-    )
+    mentors = User.objects.filter(role="mentor")
 
     if not mentors.exists():
+        messages.error(request, "Нет доступных менторов.")
 
-        messages.error(
-            request,
-            "Нет доступных менторов."
-        )
-
-        return redirect(
-            'hackathon_detail',
-            hackathon.id
-        )
+        return redirect("hackathon_detail", hackathon.id)
 
     mentor_cycle = cycle(mentors)
 
     assigned_count = 0
 
     for team in teams:
-
         mentor = next(mentor_cycle)
 
         team.mentor = mentor
@@ -1108,13 +1074,6 @@ def auto_assign_mentors(request, hackathon_id):
 
         assigned_count += 1
 
-    messages.success(
-        request,
-        f"Автоматически назначено менторов: {assigned_count}"
-    )
+    messages.success(request, f"Автоматически назначено менторов: {assigned_count}")
 
-    return redirect(
-        'hackathon_teams',
-        hackathon.id
-    )    
-    
+    return redirect("hackathon_teams", hackathon.id)

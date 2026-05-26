@@ -25,6 +25,7 @@ class User(AbstractUser):
 
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="participant")
     university = models.ForeignKey(
         University,

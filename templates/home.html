@@ -3,52 +3,46 @@
 {% block content %}
 
 <section class="hero">
-
     <h1>Hackathon Platform</h1>
-
     <p>
         Управление хакатонами, командами,
         проектами и оцениванием.
     </p>
-
-    <a class="btn"
-       href="{% url 'hackathon_list' %}">
+    <a class="btn" href="{% url 'hackathon_list' %}">
         Смотреть хакатоны
     </a>
-
 </section>
 
 <h2>Активные хакатоны</h2>
-
 <div class="grid">
-
-    {% for hackathon in hackathons %}
-
-        <div class="card">
-
+    {% for hackathon in active_hackathons %}
+        <div class="hackathon-card">
             <h3>{{ hackathon.title }}</h3>
-
-            <p>
-                {{ hackathon.description|truncatechars:120 }}
-            </p>
-
-            <p>
-                <b>Статус:</b> {{ hackathon.status }}
-            </p>
-
-            <a class="btn"
-               href="{% url 'hackathon_detail' hackathon.id %}">
-                Подробнее
-            </a>
-
+            <p>{{ hackathon.description|truncatewords:10 }}</p>
+            <p><b>Статус:</b> {{ hackathon.status }}</p>
+            <a href="{% url 'hackathon_detail' hackathon.id %}" class="btn">Подробнее</a>
         </div>
-
     {% empty %}
-
-        <p>Активных хакатонов пока нет.</p>
-
+        <p style="color: #a0aec0; grid-column: 1/-1;">В данный момент нет активных хакатонов.</p>
     {% endfor %}
+</div>
 
+<h2 style="margin-top: 50px; color: #9ca3af;">Завершенные хакатоны</h2>
+<div class="grid" style="opacity: 0.85;"> 
+    {% for hackathon in past_hackathons %}
+        <div class="hackathon-card" style="background: #1f2937; border-color: #374151;">
+            <h3>{{ hackathon.title }}</h3>
+            <p>{{ hackathon.description|truncatewords:10 }}</p>
+            
+            <p style="color: #ef4444; font-weight: 500;">
+                Хакатон завершен 🎉
+            </p>
+            
+            <a href="{% url 'hackathon_detail' hackathon.id %}" class="btn" style="background: #4b5563;">Подробнее</a>
+        </div>
+    {% empty %}
+        <p style="color: #a0aec0; grid-column: 1/-1;">Список завершенных хакатонов пуст.</p>
+    {% endfor %}
 </div>
 
 {% endblock %}

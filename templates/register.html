@@ -6,14 +6,14 @@
 <form method="post" class="form">
     {% csrf_token %}
 
-    <label>Email</label>
-    <input type="email" name="email" required>
-
-    <label>Имя пользователя</label>
+     <label>Имя пользователя</label>
     <input type="text" name="username" required>
 
     <label>Полное имя</label>
     <input type="text" name="full_name" required>
+
+    <label>Email</label>
+    <input type="email" name="email" required>
 
     <label>Университет</label>
     <select name="university" required>
