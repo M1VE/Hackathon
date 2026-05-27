@@ -4,98 +4,77 @@
 
 <h1>Редактировать хакатон</h1>
 
-<form method="post" class="form">
+<form method="post" enctype="multipart/form-data" class="form">
 
     {% csrf_token %}
 
     <label>Название</label>
-
-    <input type="text"
-           name="title"
-           value="{{ hackathon.title }}"
-           required>
+    <input type="text" name="title" value="{{ hackathon.title }}" required>
 
     <label>Описание</label>
-
-    <textarea name="description">
-{{ hackathon.description }}
-    </textarea>
+    <textarea name="description">{{ hackathon.description }}</textarea>
 
     <label>Формат</label>
-
     <select name="format">
-
-        <option value="intra"
-            {% if hackathon.format == "intra" %}
-                selected
-            {% endif %}
-        >
-            Внутривузовский
-        </option>
-
-        <option value="inter"
-            {% if hackathon.format == "inter" %}
-                selected
-            {% endif %}
-        >
-            Межвузовский
-        </option>
-
+        <option value="intra" {% if hackathon.format == "intra" %}selected{% endif %}>Внутривузовский</option>
+        <option value="inter" {% if hackathon.format == "inter" %}selected{% endif %}>Межвузовский</option>
     </select>
 
-    <label>Статус</label>
+    <label>Минимум участников в команде</label>
+    <input type="number" name="min_team_size" value="{{ hackathon.min_team_size }}" min="1">
 
-    <select name="status">
-
-        {% for value, label in hackathon.STATUS_CHOICES %}
-
-            <option value="{{ value }}"
-                {% if hackathon.status == value %}
-                    selected
-                {% endif %}
-            >
-                {{ label }}
-            </option>
-
-        {% endfor %}
-
-    </select>
-
-    <label>Минимум участников</label>
-
-    <input type="number"
-           name="min_team_size"
-           value="{{ hackathon.min_team_size }}">
-
-    <label>Максимум участников</label>
-
-    <input type="number"
-           name="max_team_size"
-           value="{{ hackathon.max_team_size }}">
+    <label>Максимум участников в команде</label>
+    <input type="number" name="max_team_size" value="{{ hackathon.max_team_size }}" min="2">
 
     <label>
-        <input type="checkbox"
-               name="allow_random_teaming"
-               {% if hackathon.allow_random_teaming %}
-                    checked
-               {% endif %}
-        >
-        Разрешить случайный добор
+        <input type="checkbox" name="is_active" {% if hackathon.is_active %}checked{% endif %}>
+        Хакатон активен (виден в списке)
     </label>
 
-    <label>
-        <input type="checkbox"
-               name="allow_mentor_assignment"
-               {% if hackathon.allow_mentor_assignment %}
-                    checked
-               {% endif %}
-        >
-        Разрешить менторов
-    </label>
+    <label>Обложка хакатона</label>
+    {% if hackathon.cover_image %}
+        <p>Текущая: <a href="{{ hackathon.cover_image.url }}" target="_blank">{{ hackathon.cover_image.name }}</a></p>
+    {% endif %}
+    <input type="file" name="cover_image" accept="image/*">
 
-    <button class="btn" type="submit">
-        Сохранить
-    </button>
+    <label>Прикреплённые файлы (добавить новые)</label>
+    <input type="file" name="attachments" multiple>
+
+    {% if attachments %}
+        <p>Уже прикреплены:</p>
+        <ul>
+            {% for a in attachments %}
+                <li><a href="{{ a.file.url }}" target="_blank">{{ a.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3 style="margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px;">Дедлайны стадий</h3>
+    <p style="color: #94a3b8; font-size: 0.9em;">Статус хакатона автоматически определяется по дедлайнам.</p>
+
+    <label>Регистрация до</label>
+    <input type="datetime-local" name="registration_deadline"
+        value="{% if stage_map.registration %}{{ stage_map.registration|date:'Y-m-d' }}T{{ stage_map.registration|date:'H:i' }}{% endif %}">
+
+    <label>Формирование команд до</label>
+    <input type="datetime-local" name="team_building_deadline"
+        value="{% if stage_map.team_building %}{{ stage_map.team_building|date:'Y-m-d' }}T{{ stage_map.team_building|date:'H:i' }}{% endif %}">
+
+    <label>Подача проектов до</label>
+    <input type="datetime-local" name="submission_deadline"
+        value="{% if stage_map.submission %}{{ stage_map.submission|date:'Y-m-d' }}T{{ stage_map.submission|date:'H:i' }}{% endif %}">
+
+    <label>Оценивание до</label>
+    <input type="datetime-local" name="judging_deadline"
+        value="{% if stage_map.judging %}{{ stage_map.judging|date:'Y-m-d' }}T{{ stage_map.judging|date:'H:i' }}{% endif %}">
+
+    <label>Публикация результатов до</label>
+    <input type="datetime-local" name="results_deadline"
+        value="{% if stage_map.results %}{{ stage_map.results|date:'Y-m-d' }}T{{ stage_map.results|date:'H:i' }}{% endif %}">
+
+    <button class="btn" type="submit" style="margin-top: 25px;">Сохранить изменения</button>
+
+    <a href="{% url 'manage_hackathon' hackathon.pk %}" style="margin-left: 15px;">Отмена</a>
 
 </form>
 
