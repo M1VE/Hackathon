@@ -12,9 +12,29 @@
         <p><b>Команда:</b> {{ project.team.team_name }}</p>
         <p><b>Хакатон:</b> {{ project.team.hackathon.title }}</p>
 
-        <a class="btn" href="{% url 'score_project' project.id %}">
-            Оценить проект
-        </a>
+        {% with assignment=project.judgeassignment_set.first %}
+
+            {% if assignment and assignment.score_set.exists %}
+
+                <div class="success" style="margin-bottom: 10px;">
+                    Оценено ✅
+                </div>
+
+                <a class="btn"
+                href="{% url 'score_project' project.id %}">
+                    Изменить оценку
+                </a>
+
+            {% else %}
+
+                <a class="btn"
+                href="{% url 'score_project' project.id %}">
+                    Оценить
+                </a>
+
+            {% endif %}
+
+        {% endwith %}
     </div>
 {% empty %}
     <p>Сейчас нет проектов для оценивания.</p>
@@ -30,7 +50,5 @@
 {% empty %}
     <p>Вы пока не назначены жюри.</p>
 {% endfor %}
-
-
 
 {% endblock %}

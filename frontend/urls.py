@@ -11,6 +11,11 @@ urlpatterns = [
         name="leaderboard",
     ),
     path(
+        "projects/<int:project_id>/",
+        views.project_detail,
+        name="project_detail",
+    ),
+    path(
         "hackathons/<int:hackathon_id>/teams/",
         views.hackathon_teams_view,
         name="hackathon_teams",

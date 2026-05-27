@@ -2,7 +2,12 @@
 
 {% block content %}
 <h1>{{ team.team_name }}</h1>
-
+<div style="margin-bottom: 20px;">
+    <a class="btn"
+       href="{% url 'hackathon_detail' team.hackathon.id %}">
+        ← Вернуться к хакатону
+    </a>
+</div>
 <div class="card">
     <p><b>Хакатон:</b> {{ team.hackathon.title }}</p>
     <p><b>Капитан:</b> {{ team.captain.full_name }} ({{ team.captain.email }})</p>

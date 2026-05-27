@@ -99,6 +99,7 @@
                     <th style="padding: 12px;">Команда</th>
                     <th style="padding: 12px;">Проект</th>
                     <th style="padding: 12px;">Баллы</th>
+                    <th style="padding: 12px;">Оценки</th>
 
                 </tr>
 
@@ -113,7 +114,7 @@
                     <td style="padding: 12px; text-align: center;">
                         {{ item.place }}
                     </td>
-
+                    
                     <td style="padding: 12px;">
                         {{ item.team.team_name }}
                     </td>
@@ -128,7 +129,57 @@
                     ">
                         {{ item.score }}
                     </td>
-
+                    <td style="padding: 12px;">
+                        <details>
+                            <summary style="cursor:pointer;">
+                                Посмотреть оценки
+                            </summary>
+                            {% for assignment in item.project.judge_assignments.all %}
+                                <div style="
+                                    margin-top:10px;
+                                    padding:10px;
+                                    border-radius:10px;
+                                    background: rgba(255,255,255,0.04);
+                                ">
+                                    <p>
+                                        <b>Жюри:</b>
+                                        {{ assignment.judge.user.full_name }}
+                                    </p>
+                                    {% for score in assignment.scores.all %}
+                                        <div style="
+                                            margin-left:10px;
+                                            margin-bottom:8px;
+                                        ">
+                                            <p>
+                                                <b>{{ score.criterion.name }}</b>
+                                                —
+                                                {{ score.score_value }}/{{ score.criterion.max_score }}
+                                            </p>
+                                            {% if score.comment %}
+                                                {% if user.is_authenticated %}
+                                                    {% if user == item.team.mentor or user == hackathon.organizer %}
+                                                        <p style="opacity:0.8;">
+                                                            💬 {{ score.comment }}
+                                                        </p>
+                                                    {% else %}
+                                                        {% for member in item.team.members.all %}
+                                                            {% if member.user == user %}
+                                                                <p style="opacity:0.8;">
+                                                                    💬 {{ score.comment }}
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% empty %}
+                                <p>Нет оценок</p>
+                            {% endfor %}
+                        </details>
+                    </td>
                 </tr>
 
                 {% endfor %}

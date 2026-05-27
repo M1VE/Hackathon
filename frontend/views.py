@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from datetime import datetime
 
 from users.models import User, University
 from hackathons.models import (
@@ -20,6 +21,7 @@ from judging.models import Criterion, Judge, JudgeAssignment, Score
 from itertools import cycle
 
 from django.db.models import Case, When, IntegerField
+
 
 def assign_team_mentor(request, team_id):
 
@@ -55,17 +57,21 @@ def leaderboard_view(request, hackathon_id):
 
     hackathon = get_object_or_404(Hackathon, id=hackathon_id)
 
-    # leaderboard доступен только после завершения
-
     if hackathon.status not in ["finished", "archived"]:
         return redirect("hackathon_detail", hackathon.id)
 
     leaderboard = get_hackathon_leaderboard(hackathon)
 
+    for item in leaderboard:
+        item["project"] = Project.objects.filter(team=item["team"]).first()
+
     return render(
         request,
         "leaderboard.html",
-        {"hackathon": hackathon, "leaderboard": leaderboard},
+        {
+            "hackathon": hackathon,
+            "leaderboard": leaderboard,
+        },
     )
 
 
@@ -230,7 +236,7 @@ def participant_dashboard(request):
 
     hackathons = sorted(
         [p.hackathon for p in participations],
-        key=lambda h: (h.status in ["archived", "finished"]),
+        key=lambda h: h.status in ["archived", "finished"],
     )
 
     status_order = Case(
@@ -244,9 +250,12 @@ def participant_dashboard(request):
         output_field=IntegerField(),
     )
 
-    teams = TeamMember.objects.filter(user=request.user).select_related(
-        "team", "team__hackathon"
-    ).annotate(status_order=status_order).order_by("status_order")
+    teams = (
+        TeamMember.objects.filter(user=request.user)
+        .select_related("team", "team__hackathon")
+        .annotate(status_order=status_order)
+        .order_by("status_order")
+    )
 
     return render(
         request,
@@ -272,9 +281,12 @@ def mentor_dashboard(request):
         output_field=IntegerField(),
     )
 
-    teams = Team.objects.filter(mentor=request.user).select_related(
-        "hackathon", "captain"
-    ).annotate(status_order=status_order).order_by("status_order")
+    teams = (
+        Team.objects.filter(mentor=request.user)
+        .select_related("hackathon", "captain")
+        .annotate(status_order=status_order)
+        .order_by("status_order")
+    )
 
     return render(
         request,
@@ -463,10 +475,13 @@ def create_hackathon(request):
 
         for stage_name, deadline in stages.items():
             if deadline:
+                parsed_deadline = timezone.make_aware(
+                    datetime.strptime(deadline, "%Y-%m-%dT%H:%M")
+                )
                 HackathonStage.objects.create(
                     hackathon=hackathon,
                     stage_name=stage_name,
-                    deadline=deadline,
+                    deadline=parsed_deadline,
                 )
 
         messages.success(request, "Хакатон создан.")
@@ -519,7 +534,11 @@ def edit_hackathon(request, pk):
                 HackathonStage.objects.update_or_create(
                     hackathon=hackathon,
                     stage_name=stage_name,
-                    defaults={"deadline": deadline},
+                    defaults={
+                        "deadline": timezone.make_aware(
+                            datetime.strptime(deadline, "%Y-%m-%dT%H:%M")
+                        )
+                    },
                 )
 
         messages.success(request, "Хакатон обновлён.")
@@ -724,7 +743,7 @@ def create_team(request, pk):
             messages.error(
                 request,
                 f"Нельзя создать команду: недостаточно свободных участников. "
-                f"Минимум в команде: {hackathon.min_team_size}."
+                f"Минимум в команде: {hackathon.min_team_size}.",
             )
             return redirect("hackathon_detail", pk=pk)
 
@@ -741,7 +760,9 @@ def create_team(request, pk):
 
         TeamMember.objects.create(team=team, user=request.user, role_in_team="captain")
 
-        messages.success(request, f"Команда создана. Максимум участников: {hackathon.max_team_size}.")
+        messages.success(
+            request, f"Команда создана. Максимум участников: {hackathon.max_team_size}."
+        )
         return redirect("team_detail", team_id=team.id)
 
     return render(
@@ -1000,6 +1021,41 @@ def submit_project(request, pk):
         {
             "hackathon": hackathon,
             "project": project,
+        },
+    )
+
+
+@login_required
+def project_detail(request, project_id):
+
+    project = get_object_or_404(Project, id=project_id)
+
+    hackathon = project.team.hackathon
+
+    assignments = JudgeAssignment.objects.filter(project=project).select_related(
+        "judge", "judge__user"
+    )
+
+    scores = Score.objects.filter(assignment__project=project).select_related(
+        "criterion",
+        "assignment",
+        "assignment__judge__user",
+    )
+
+    total_score = 0
+
+    for score in scores:
+        total_score += score.score_value
+
+    return render(
+        request,
+        "project_detail.html",
+        {
+            "project": project,
+            "hackathon": hackathon,
+            "assignments": assignments,
+            "scores": scores,
+            "total_score": total_score,
         },
     )
 
