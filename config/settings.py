@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 from datetime import timedelta
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 
@@ -64,10 +66,17 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        os.getenv("DATABASE_URL"),
-        conn_max_age=600,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "hackathondb",
+        "USER": "postgres",
+        "PASSWORD": os.getenv("DB_PASSWORD", "admin"),
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
+        "OPTIONS": {
+            "client_encoding": "UTF8",
+        },
+    }
 }
 
 DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
