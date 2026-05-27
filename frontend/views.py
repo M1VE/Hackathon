@@ -63,14 +63,7 @@ def leaderboard_view(request, hackathon_id):
     leaderboard = get_hackathon_leaderboard(hackathon)
 
     for item in leaderboard:
-        item["project"] = (
-            Project.objects.filter(team=item["team"])
-            .prefetch_related(
-                "judgeassignment_set__score_set__criterion",
-                "judgeassignment_set__judge__user",
-            )
-            .first()
-        )
+        item["project"] = Project.objects.filter(team=item["team"]).first()
 
     return render(
         request,

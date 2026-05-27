@@ -134,7 +134,7 @@
                             <summary style="cursor:pointer;">
                                 Посмотреть оценки
                             </summary>
-                            {% for assignment in item.project.judgeassignment_set.all %}
+                            {% for assignment in item.project.judge_assignments.all %}
                                 <div style="
                                     margin-top:10px;
                                     padding:10px;
@@ -145,7 +145,7 @@
                                         <b>Жюри:</b>
                                         {{ assignment.judge.user.full_name }}
                                     </p>
-                                    {% for score in assignment.score_set.all %}
+                                    {% for score in assignment.scores.all %}
                                         <div style="
                                             margin-left:10px;
                                             margin-bottom:8px;
@@ -156,9 +156,21 @@
                                                 {{ score.score_value }}/{{ score.criterion.max_score }}
                                             </p>
                                             {% if score.comment %}
-                                                <p style="opacity:0.8;">
-                                                    💬 {{ score.comment }}
-                                                </p>
+                                                {% if user.is_authenticated %}
+                                                    {% if user == item.team.mentor or user == hackathon.organizer %}
+                                                        <p style="opacity:0.8;">
+                                                            💬 {{ score.comment }}
+                                                        </p>
+                                                    {% else %}
+                                                        {% for member in item.team.members.all %}
+                                                            {% if member.user == user %}
+                                                                <p style="opacity:0.8;">
+                                                                    💬 {{ score.comment }}
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     {% endfor %}
