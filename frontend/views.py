@@ -498,7 +498,6 @@ def edit_hackathon(request, pk):
         hackathon.title = request.POST.get("title")
         hackathon.description = request.POST.get("description")
         hackathon.format = request.POST.get("format")
-        hackathon.status = request.POST.get("status")
         hackathon.is_active = request.POST.get("is_active") == "on"
         hackathon.min_team_size = max(1, int(request.POST.get("min_team_size") or 2))
         hackathon.max_team_size = max(2, int(request.POST.get("max_team_size") or 5))
@@ -508,7 +507,6 @@ def edit_hackathon(request, pk):
         hackathon.allow_mentor_assignment = (
             request.POST.get("allow_mentor_assignment") == "on"
         )
-        hackathon.max_mentors_per_team = request.POST.get("max_mentors_per_team") or 1
 
         if request.FILES.get("cover_image"):
             hackathon.cover_image = request.FILES.get("cover_image")
@@ -528,18 +526,30 @@ def edit_hackathon(request, pk):
             "judging",
             "results",
         ]:
-            deadline = request.POST.get(f"{stage_name}_deadline")
+            deadline_str = request.POST.get(f"{stage_name}_deadline")
 
-            if deadline:
-                HackathonStage.objects.update_or_create(
-                    hackathon=hackathon,
-                    stage_name=stage_name,
-                    defaults={
-                        "deadline": timezone.make_aware(
-                            datetime.strptime(deadline, "%Y-%m-%dT%H:%M")
-                        )
-                    },
-                )
+            if deadline_str:
+                try:
+                    parsed_deadline = timezone.make_aware(
+                        datetime.strptime(deadline_str, "%Y-%m-%dT%H:%M")
+                    )
+                    HackathonStage.objects.update_or_create(
+                        hackathon=hackathon,
+                        stage_name=stage_name,
+                        defaults={"deadline": parsed_deadline},
+                    )
+                except ValueError:
+                    messages.warning(
+                        request, f"Неверный формат даты для стадии «{stage_name}»."
+                    )
+            else:
+                # Если поле пустое — удаляем стадию
+                HackathonStage.objects.filter(
+                    hackathon=hackathon, stage_name=stage_name
+                ).delete()
+
+        # После обновления стадий пересчитываем статус
+        update_hackathon_status(hackathon)
 
         messages.success(request, "Хакатон обновлён.")
         return redirect("manage_hackathon", pk=hackathon.id)
@@ -806,10 +816,15 @@ def join_random_team(request, pk):
 
     # Ищем открытые команды
     # Фильтруем только команды своего университета
+    # первый open_teams добавил потому что во втором была подчеркнута красным open_teams.filter
+    open_teams = Team.objects.filter(hackathon=hackathon, is_open_for_random_join=True)
     open_teams = open_teams.filter(captain__university=request.user.university)
 
     if not open_teams.exists():
-        messages.warning(request, "Нет открытых команд вашего университета. Создайте собственную команду.")
+        messages.warning(
+            request,
+            "Нет открытых команд вашего университета. Создайте собственную команду.",
+        )
         return redirect("create_team", pk=pk)
 
     selected_team = min(open_teams, key=lambda team: team.members.count())
@@ -822,7 +837,6 @@ def join_random_team(request, pk):
     messages.success(request, f"Вы были добавлены в команду {selected_team.team_name}")
 
     return redirect("team_detail", team_id=selected_team.id)
-
 
 
 @role_required(["participant", "mentor", "organizer"])
