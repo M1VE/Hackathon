@@ -440,8 +440,8 @@ def create_hackathon(request):
             format=request.POST.get("format"),
             status=request.POST.get("status", "draft"),
             is_active=True,
-            min_team_size=request.POST.get("min_team_size") or 2,
-            max_team_size=request.POST.get("max_team_size") or 5,
+            min_team_size=max(1, int(request.POST.get("min_team_size") or 2)),
+            max_team_size=max(2, int(request.POST.get("max_team_size") or 5)),
             allow_random_teaming=request.POST.get("allow_random_teaming") == "on",
             allow_mentor_assignment=request.POST.get("allow_mentor_assignment") == "on",
             cover_image=request.FILES.get("cover_image"),
@@ -485,8 +485,8 @@ def edit_hackathon(request, pk):
         hackathon.format = request.POST.get("format")
         hackathon.status = request.POST.get("status")
         hackathon.is_active = request.POST.get("is_active") == "on"
-        hackathon.min_team_size = request.POST.get("min_team_size") or 2
-        hackathon.max_team_size = request.POST.get("max_team_size") or 5
+        hackathon.min_team_size = max(1, int(request.POST.get("min_team_size") or 2))
+        hackathon.max_team_size = max(2, int(request.POST.get("max_team_size") or 5))
         hackathon.allow_random_teaming = (
             request.POST.get("allow_random_teaming") == "on"
         )
@@ -708,7 +708,7 @@ def create_team(request, pk):
         return redirect("hackathon_detail", pk=pk)
 
     if request.method == "POST":
-        team_name = request.POST.get("team_name")
+        team_name = request.POST.get("team_name", "").strip()
         existing_team = Team.objects.filter(
             team_name__iexact=team_name, hackathon=hackathon
         ).exists()
@@ -784,15 +784,13 @@ def join_random_team(request, pk):
         return redirect("hackathon_detail", pk=pk)
 
     # Ищем открытые команды
-    open_teams = Team.objects.filter(hackathon=hackathon, is_open_for_random_join=True)
+    # Фильтруем только команды своего университета
+    open_teams = open_teams.filter(captain__university=request.user.university)
 
-    # Если открытых нет
     if not open_teams.exists():
-        messages.warning(request, "Нет открытых команд. Создайте собственную команду.")
-
+        messages.warning(request, "Нет открытых команд вашего университета. Создайте собственную команду.")
         return redirect("create_team", pk=pk)
 
-    # Находим команду с наименьшим количеством участников
     selected_team = min(open_teams, key=lambda team: team.members.count())
 
     # Добавляем участника
@@ -803,6 +801,7 @@ def join_random_team(request, pk):
     messages.success(request, f"Вы были добавлены в команду {selected_team.team_name}")
 
     return redirect("team_detail", team_id=selected_team.id)
+
 
 
 @role_required(["participant", "mentor", "organizer"])
@@ -877,7 +876,7 @@ def join_team_by_code_form(request, pk):
     update_hackathon_status(hackathon)
 
     if request.method == "POST":
-        invite_code = request.POST.get("invite_code")
+        invite_code = request.POST.get("invite_code", "").strip()
 
         if request.user.role == "participant":
             team = Team.objects.filter(
