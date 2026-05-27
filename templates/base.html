@@ -84,9 +84,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Если время вышло
             if (distance < 0) {
-                displayElement.innerHTML = "Этап завершен. Обновите страницу.";
-                setTimeout(() => location.reload(), 2000);
-                timer.classList.add("completed");
+                if (!timer.classList.contains("completed")) {
+                    timer.classList.add("completed");
+                    displayElement.innerHTML = "Этап завершен. Обновляем...";
+                    setTimeout(() => location.reload(), 2000);
+                }
                 return;
             }
 
@@ -111,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
 });
-setInterval(() => location.reload(), 60000);
+// setInterval(() => location.reload(), 60000);
 </script>
 </body>
 </html>

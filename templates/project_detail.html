@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+    <h1>{{ project.title }}</h1>
+
+    <p>
+        <b>Команда:</b>
+        {{ project.team.team_name }}
+    </p>
+
+    <p>
+        <b>Описание:</b>
+        {{ project.description }}
+    </p>
+
+    <p>
+        <b>Технологии:</b>
+        {{ project.technologies }}
+    </p>
+
+    <p>
+        <b>Общий балл:</b>
+        {{ total_score }}
+    </p>
+
+</div>
+
+<div class="card">
+
+    <h2>
+        Оценки жюри
+    </h2>
+
+    {% for score in scores %}
+
+        <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #374151;">
+
+            <p>
+                <b>Жюри:</b>
+                {{ score.assignment.judge.user.full_name }}
+            </p>
+
+            <p>
+                <b>Критерий:</b>
+                {{ score.criterion.name }}
+            </p>
+
+            <p>
+                <b>Балл:</b>
+                {{ score.score_value }}
+                / {{ score.criterion.max_score }}
+            </p>
+
+            {% if score.comment %}
+                <p>
+                    <b>Комментарий:</b>
+                    {{ score.comment }}
+                </p>
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+
+        <p>
+            Пока нет оценок.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
