@@ -65,6 +65,7 @@
 
     {% block content %}{% endblock %}
 </main>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     function updateCountdowns() {
@@ -90,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     setTimeout(() => location.reload(), 2000);
                 }
                 return;
-            }
+            }   
 
             // Вычисляем дни, часы, минуты и секунды
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -113,7 +114,9 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
 });
-// setInterval(() => location.reload(), 60000);
+
+// setInterval(() => location.reload(), 120000);
+
 </script>
 </body>
 </html>
