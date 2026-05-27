@@ -66,17 +66,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "hackathondb",
-        "USER": "postgres",
-        "PASSWORD": os.getenv("DB_PASSWORD", "admin"),
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
-        "OPTIONS": {
-            "client_encoding": "UTF8",
-        },
-    }
+    "default": dj_database_url.parse(
+        os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
 
 DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
