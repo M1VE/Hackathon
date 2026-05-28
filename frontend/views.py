@@ -20,7 +20,7 @@ from projects.models import Project
 from judging.models import Criterion, Judge, JudgeAssignment, Score
 from itertools import cycle
 
-from django.db.models import Case, When, IntegerField
+from django.db.models import Case, When, IntegerField, Q, Value
 
 
 def assign_team_mentor(request, team_id):
@@ -339,28 +339,41 @@ def judge_dashboard(request):
 
 
 def hackathon_list(request):
-    hackathons = Hackathon.objects.filter(is_active=True).order_by("-created_at")
-
-    for hackathon in hackathons:
+    for hackathon in Hackathon.objects.all():
         update_hackathon_status(hackathon)
 
-    visible_hackathons = []
+    published_statuses = [
+        "registration",
+        "team_building",
+        "submission",
+        "judging",
+        "finished",
+        "archived",
+    ]
 
-    for hackathon in hackathons:
-        if hackathon.status != "draft":
-            visible_hackathons.append(hackathon)
-        elif (
-            request.user.is_authenticated
-            and request.user.role == "organizer"
-            and hackathon.organizer == request.user
-        ):
-            visible_hackathons.append(hackathon)
+    queryset = Hackathon.objects.annotate(
+        sort_group=Case(
+            When(status__in=["finished", "archived"], then=Value(1)),
+            When(status="draft", then=Value(2)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    )
+
+    if request.user.is_authenticated and request.user.role == "organizer":
+        hackathons = queryset.filter(
+            Q(status__in=published_statuses) | Q(status="draft", organizer=request.user)
+        )
+    else:
+        hackathons = queryset.filter(status__in=published_statuses)
+
+    hackathons = hackathons.order_by("sort_group", "-created_at")
 
     return render(
         request,
         "hackathon_list.html",
         {
-            "hackathons": visible_hackathons,
+            "hackathons": hackathons,
         },
     )
 

@@ -1,209 +1,97 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="card">
-
-    <h1>
-        🏆 {{ hackathon.title }} Leaderboard
-    </h1>
-
-    <p>
-        Итоговые результаты хакатона
-    </p>
-
-    <div style="margin-top: 20px;">
-
-        <a class="btn"
-           href="{% url 'hackathon_detail' hackathon.id %}">
-            ← Назад к хакатону
-        </a>
-
-        <a class="btn"
-           href="{% url 'home' %}">
-            На главную
-        </a>
-
+<div class="page-shell">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Результаты</span>
+            <h1 class="section-title">{{ hackathon.title }}</h1>
+            <p class="page-lead">Итоговая таблица лидеров хакатона.</p>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-ghost" href="{% url 'hackathon_detail' hackathon.id %}">← К хакатону</a>
+        </div>
     </div>
 
-</div>
-
-
-{% if leaderboard %}
-
-    <!-- TOP 3 -->
-
-    <div class="card">
-
-        <h2>🥇 Топ команды</h2>
-
-        {% for item in leaderboard|slice:":3" %}
-
-            <div style="
-                padding: 15px;
-                margin-bottom: 15px;
-                border-radius: 14px;
-                background: rgba(255,255,255,0.05);
-            ">
-
-                <h3>
-
-                    {% if item.place == 1 %}
-                        🥇
-                    {% elif item.place == 2 %}
-                        🥈
-                    {% elif item.place == 3 %}
-                        🥉
-                    {% endif %}
-
-                    #{{ item.place }}
-                    — {{ item.team.team_name }}
-
-                </h3>
-
-                <p>
-                    <b>Проект:</b>
-                    {{ item.project.title }}
-                </p>
-
-                <p>
-                    <b>Баллы:</b>
-                    {{ item.score }}
-                </p>
-
+    {% if leaderboard %}
+        <section class="page-section">
+            <div class="page-section__head"><h2 class="page-section__title">Топ-3</h2></div>
+            <div class="leaderboard-podium">
+                {% for item in leaderboard|slice:":3" %}
+                    <div class="leaderboard-podium__item">
+                        <h3 class="leaderboard-podium__title">
+                            <span class="podium-rank podium-rank--{{ item.place }}" aria-hidden="true">
+                                <svg class="podium-rank__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3l2.4 6.2H21l-5.2 3.8 2 6.2L12 15.8 6.2 19.2l2-6.2L3 9.2h6.6L12 3z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="podium-rank__num">{{ item.place }}</span>
+                            </span>
+                            <span>{{ item.team.team_name }}</span>
+                        </h3>
+                        <p><b>Проект:</b> {{ item.project.title }}</p>
+                        <p><b>Баллы:</b> {{ item.score }}</p>
+                    </div>
+                {% endfor %}
             </div>
+        </section>
 
-        {% endfor %}
-
-    </div>
-
-
-    <!-- FULL TABLE -->
-
-    <div class="card">
-
-        <h2>Полный рейтинг</h2>
-
-        <table style="
-            width: 100%;
-            border-collapse: collapse;
-        ">
-
-            <thead>
-
-                <tr style="
-                    background: rgba(255,255,255,0.08);
-                ">
-
-                    <th style="padding: 12px;">Место</th>
-                    <th style="padding: 12px;">Команда</th>
-                    <th style="padding: 12px;">Проект</th>
-                    <th style="padding: 12px;">Баллы</th>
-                    <th style="padding: 12px;">Оценки</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for item in leaderboard %}
-
-                <tr>
-
-                    <td style="padding: 12px; text-align: center;">
-                        {{ item.place }}
-                    </td>
-                    
-                    <td style="padding: 12px;">
-                        {{ item.team.team_name }}
-                    </td>
-
-                    <td style="padding: 12px;">
-                        {{ item.project.title }}
-                    </td>
-
-                    <td style="
-                        padding: 12px;
-                        text-align: center;
-                    ">
-                        {{ item.score }}
-                    </td>
-                    <td style="padding: 12px;">
-                        <details>
-                            <summary style="cursor:pointer;">
-                                Посмотреть оценки
-                            </summary>
-                            {% for assignment in item.project.judge_assignments.all %}
-                                <div style="
-                                    margin-top:10px;
-                                    padding:10px;
-                                    border-radius:10px;
-                                    background: rgba(255,255,255,0.04);
-                                ">
-                                    <p>
-                                        <b>Жюри:</b>
-                                        {{ assignment.judge.user.full_name }}
-                                    </p>
-                                    {% for score in assignment.scores.all %}
-                                        <div style="
-                                            margin-left:10px;
-                                            margin-bottom:8px;
-                                        ">
-                                            <p>
-                                                <b>{{ score.criterion.name }}</b>
-                                                —
-                                                {{ score.score_value }}/{{ score.criterion.max_score }}
-                                            </p>
+        <section class="panel panel--card">
+            <h2 class="panel__title">Полный рейтинг</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Команда</th>
+                        <th>Проект</th>
+                        <th>Баллы</th>
+                        <th>Оценки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in leaderboard %}
+                    <tr>
+                        <td>{{ item.place }}</td>
+                        <td>{{ item.team.team_name }}</td>
+                        <td>{{ item.project.title }}</td>
+                        <td>{{ item.score }}</td>
+                        <td>
+                            <details>
+                                <summary>Подробнее</summary>
+                                {% for assignment in item.project.judge_assignments.all %}
+                                    <div style="margin-top:10px;padding:10px;border-radius:10px;background:#f8fafc;">
+                                        <p><b>Жюри:</b> {{ assignment.judge.user.full_name }}</p>
+                                        {% for score in assignment.scores.all %}
+                                            <p style="margin-left:8px;"><b>{{ score.criterion.name }}</b> — {{ score.score_value }}/{{ score.criterion.max_score }}</p>
                                             {% if score.comment %}
                                                 {% if user.is_authenticated %}
                                                     {% if user == item.team.mentor or user == hackathon.organizer %}
-                                                        <p style="opacity:0.8;">
-                                                            💬 {{ score.comment }}
-                                                        </p>
+                                                        <p style="opacity:0.85;margin-left:8px;">{{ score.comment }}</p>
                                                     {% else %}
                                                         {% for member in item.team.members.all %}
                                                             {% if member.user == user %}
-                                                                <p style="opacity:0.8;">
-                                                                    💬 {{ score.comment }}
-                                                                </p>
+                                                                <p style="opacity:0.85;margin-left:8px;">{{ score.comment }}</p>
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% empty %}
-                                <p>Нет оценок</p>
-                            {% endfor %}
-                        </details>
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-{% else %}
-
-    <div class="card">
-
-        <h2>
-            Пока нет результатов
-        </h2>
-
-        <p>
-            Судьи ещё не выставили оценки.
-        </p>
-
-    </div>
-
-{% endif %}
-
+                                        {% endfor %}
+                                    </div>
+                                {% empty %}
+                                    <p>Нет оценок</p>
+                                {% endfor %}
+                            </details>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% else %}
+        <div class="empty-state">
+            <h3>Пока нет результатов</h3>
+            <p>Судьи ещё не выставили оценки.</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,34 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Создать команду</h1>
-<p style="color: #9ca3af; margin-bottom: 20px;">
-    Размер команды: минимум <b style="color:#fff;">{{ min_team_size }}</b>, максимум <b style="color:#fff;">{{ max_team_size }}</b> участников.
-<p style="
-    color: #facc15;
-    margin-bottom: 20px;
-">
-
-    Если команда не наберёт минимальное количество участников,
-    она может быть не допущена к хакатону.
-
-</p>
-<form method="post" class="form">
-    {% csrf_token %}
-
-    <label>Название команды</label>
-    <input type="text" name="team_name" required>
-
-
-    <div class="checkbox-group" style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; padding: 5px 0; cursor: pointer;">
-        <label for="id_random_join" style="margin: 0; cursor: pointer; display: inline-block; width: auto; font-weight: 500; color: #e2e8f0;">
-            Сделать команду открытой 
-        </label>
-        <input type="checkbox" name="is_open_for_random_join" id="id_random_join" style="width: auto; margin: 0 0 0 10px; cursor: pointer; transform: scale(1.2);">
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">{{ hackathon.title }}</span>
+            <h1 class="section-title">Создать команду</h1>
+            <p class="page-lead">Придумайте название и решите, смогут ли участники вступать без приглашения.</p>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'hackathon_detail' hackathon.id %}">← К хакатону</a>
     </div>
 
-    <button class="btn" type="submit" style="margin-top: 20px;">
-        Создать команду
-    </button>
-</form>
+    <p class="callout callout--info">
+        Размер команды: минимум <strong>{{ hackathon.min_team_size|default:2 }}</strong>,
+        максимум <strong>{{ hackathon.max_team_size|default:5 }}</strong> участников.
+    </p>
+    <p class="callout">
+        Если команда не наберёт минимальное количество участников, она может быть не допущена к хакатону.
+    </p>
+
+    <form method="post" class="form panel-form">
+        {% csrf_token %}
+
+        <label for="team_name">Название команды</label>
+        <input type="text" id="team_name" name="team_name" placeholder="Например: Code Nomads" required>
+
+        <div class="checkbox-field">
+            <label for="id_random_join">Сделать команду открытой для случайного вступления</label>
+            <input type="checkbox" name="is_open_for_random_join" id="id_random_join">
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Создать команду</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

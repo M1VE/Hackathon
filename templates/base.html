@@ -2,59 +2,45 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hackathon Platform</title>
     {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+<header class="header">
+    <div class="header-inner">
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-text">HackPlatform</span>
+        </a>
 
-    <header class="header">
-        <div class="logo">
-            <a href="/">Hackathon Platform</a>
-        </div>
-    
-        <nav style="display: flex; align-items: center; gap: 15px;">
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="mainNav">
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+
+        <nav class="main-nav" id="mainNav">
+            <a href="{% url 'home' %}#about">О хакатоне</a>
+            <a href="{% url 'home' %}#diary">Дневник</a>
+            <a href="{% url 'home' %}#faq">FAQ</a>
             <a href="{% url 'hackathon_list' %}">Хакатоны</a>
-            <a href="{% url 'dashboard' %}">Кабинет</a>
-    
-            {% if user.is_authenticated %}
-                <a href="{% url 'user_profile' username=user.username %}" class="user-profile-link" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
-                    
-                    {% if user.avatar %}
-                        <img src="{{ user.avatar.url }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #334155;">
-                    {% else %}
-                        <div class="default-avatar" style="width: 32px; height: 32px; background: #374151; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 12px; font-weight: bold; border: 1px solid #4b5563;">
-                            {{ user.username|slice:":2"|upper }}
-                        </div>
-                    {% endif %}
-                    
-                    <span class="navbar-username" style="color: #fff; font-weight: 500; transition: color 0.2s;">
-                        {{ user.full_name|default:user.username }}
-                    </span>
-                </a>
-    
-                {% if user.role %}
-                    <span style="background: #1f2937; color: #9ca3af; padding: 4px 8px; border-radius: 6px; font-size: 11px; text-transform: uppercase; font-weight: bold; border: 1px solid #374151; pointer-events: none;">
-                        {{ user.role }}
-                    </span>
-                {% endif %}           
-    
-                <a href="{% url 'site_logout' %}">Выйти</a>
-            {% else %}
-                <a href="{% url 'site_login' %}">Войти</a>
-                <a href="{% url 'site_register' %}">Регистрация</a>
-            {% endif %}
         </nav>
-    </header>
-    
-    <style>
-        .user-profile-link:hover .navbar-username {
-            color: #38bdf8 !important; /* Твой фирменный голубой цвет */
-        }
-        .user-profile-link:hover .default-avatar {
-            border-color: #38bdf8 !important;
-        }
-    </style>
+
+        <div class="header-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-header">Кабинет</a>
+                <a href="{% url 'site_logout' %}" class="btn-header">Выйти</a>
+            {% else %}
+                <a href="{% url 'site_login' %}" class="btn-header">Вход</a>
+                <a href="{% url 'site_register' %}" class="btn-header">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
 
 <main class="container">
     {% if messages %}
@@ -66,8 +52,116 @@
     {% block content %}{% endblock %}
 </main>
 
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div>
+            <strong>HackPlatform</strong>
+            <p>Наш студенческий проект для хакатонов. Надеемся, что вам понравится!</p>
+        </div>
+        <div>
+            <strong>Навигация</strong>
+            <a href="{% url 'home' %}#about">О хакатоне</a>
+            <a href="{% url 'home' %}#diary">Дневник</a>
+            <a href="{% url 'home' %}#faq">FAQ</a>
+            <a href="{% url 'hackathon_list' %}">Хакатоны</a>
+        </div>
+        <div>
+            <strong>Аккаунт</strong>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Кабинет</a>
+                <a href="{% url 'site_logout' %}">Выйти</a>
+            {% else %}
+                <a href="{% url 'site_login' %}">Вход</a>
+                <a href="{% url 'site_register' %}">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+
+<button type="button" class="scroll-top" id="scrollTopBtn" aria-label="Наверх" title="Наверх">
+    <svg class="scroll-top__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 14l6-7 6 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</button>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const navToggle = document.getElementById("navToggle");
+    const mainNav = document.getElementById("mainNav");
+
+    const closeMobileNav = () => {
+        if (!mainNav || !navToggle) return;
+        mainNav.classList.remove("is-open");
+        navToggle.setAttribute("aria-expanded", "false");
+        navToggle.setAttribute("aria-label", "Открыть меню");
+        document.body.classList.remove("nav-open");
+    };
+
+    if (navToggle && mainNav) {
+        navToggle.addEventListener("click", () => {
+            const isOpen = mainNav.classList.toggle("is-open");
+            navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            navToggle.setAttribute("aria-label", isOpen ? "Закрыть меню" : "Открыть меню");
+            document.body.classList.toggle("nav-open", isOpen);
+        });
+
+        mainNav.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", closeMobileNav);
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeMobileNav();
+        });
+    }
+
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
+    if (scrollTopBtn) {
+        const toggleScrollTop = () => {
+            scrollTopBtn.classList.toggle("is-visible", window.scrollY > 320);
+        };
+        window.addEventListener("scroll", toggleScrollTop, { passive: true });
+        toggleScrollTop();
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const scrollToAnchor = (hash) => {
+        if (!hash || hash === "#") return;
+        const target = document.querySelector(hash);
+        if (!target) return;
+        target.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "start",
+        });
+    };
+
+    document.querySelectorAll('a[href*="#"]').forEach((link) => {
+        link.addEventListener("click", (event) => {
+            const url = new URL(link.href, window.location.origin);
+            if (!url.hash) return;
+
+            const sameDocument =
+                url.pathname === window.location.pathname &&
+                url.hostname === window.location.hostname;
+
+            if (!sameDocument) return;
+
+            const target = document.querySelector(url.hash);
+            if (!target) return;
+
+            event.preventDefault();
+            scrollToAnchor(url.hash);
+            history.pushState(null, "", url.hash);
+        });
+    });
+
+    if (window.location.hash) {
+        requestAnimationFrame(() => scrollToAnchor(window.location.hash));
+    }
+
     function updateCountdowns() {
         const timers = document.querySelectorAll("[data-countdown]");
         
@@ -75,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const deadlineTimestamp = timer.getAttribute("data-countdown");
             if (!deadlineTimestamp) return;
 
-            // Умножаем на 1000, так как JS работает в миллисекундах
             const deadline = parseInt(deadlineTimestamp) * 1000;
             const now = new Date().getTime();
             const distance = deadline - now;
@@ -83,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!displayElement) return;
 
-            // Если время вышло
             if (distance < 0) {
                 if (!timer.classList.contains("completed")) {
                     timer.classList.add("completed");
@@ -93,13 +185,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }   
 
-            // Вычисляем дни, часы, минуты и секунды
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Красивое отображение строки таймера
             let timerString = "";
             if (days > 0) timerString += days + "д ";
             timerString += hours.toString().padStart(2, '0') + "ч ";
@@ -110,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Запускаем каждую секунду
+
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
 });

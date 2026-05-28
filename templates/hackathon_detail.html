@@ -1,169 +1,150 @@
 {% extends "base.html" %}
+{% load hackathon_tags %}
 
 {% block content %}
-    <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px; box-sizing: border-box;">
-        <h1>{{ hackathon.title }}</h1>
-
-        {% if hackathon.cover_image %}
-            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 15px;">
-                <img src="{{ hackathon.cover_image.url }}" alt="Hackathon cover" style="height: 300px; width: 300; object-fit: contain; border-radius: 14px;">
+<div class="page-shell">
+    <div class="hackathon-detail-layout">
+        <section class="panel hackathon-detail-main">
+            <div class="hackathon-detail-head">
+                <span class="status-badge status-{{ hackathon.status }}">{{ hackathon.get_status_display }}</span>
+                <h1 class="section-title">{{ hackathon.title }}</h1>
             </div>
-        {% endif %}
 
-        <p>{{ hackathon.description }}</p>
-
-        <p><b>Формат:</b> {{ hackathon.format }}</p>
-        <p><b>Статус:</b> {{ hackathon.status }}</p>
-        <p><b>Команда:</b> {{ hackathon.min_team_size }}–{{ hackathon.max_team_size }} участников</p>
-        
-        {% load hackathon_tags %}
-
-        {% with next_deadline=hackathon|get_current_deadline %}
-            {% if next_deadline %}
-                <div class="timer-box" data-countdown="{{ next_deadline }}" style="margin: 20px 0; padding: 15px; background: #1f2937; border-radius: 8px; border: 1px solid #374151;">
-                    <span class="timer-label" style="color: #9ca3af;">До конца этапа ({{ hackathon|get_current_stage_title }}):</span>
-                    <span class="timer-countdown" style="font-weight: bold; color: #fff; margin-left: 5px;">Считаем...</span>
-                </div>
-            {% else %}
-                <div class="timer-box completed" style="margin: 20px 0; padding: 15px; background: #1f2937; border-radius: 8px; border: 1px solid #374151;">
-                    <span class="timer-countdown" style="color: #10b981; font-weight: bold;">Хакатон завершен 🎉</span>
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        {% if attachments %}
-            {% if hackathon.status == "submission" or hackathon.status == "judging" or hackathon.status == "finished" or hackathon.status == "archived" %}
-                <h3>
-                    Правила хакатона
-                </h3>
-                {% for attachment in attachments %}
-                    <p>
-                        <a href="{{ attachment.file.url }}"
-                        download
-                        style="color: #38f88b; text-decoration: underline; font-weight: bold;">
-                            Скачать:
-                            {{ attachment.title|default:attachment.file.name }}
-                        </a>
-                    </p>
-                {% endfor %}
-            {% endif %}
-        {% endif %}
-    </div>
-
-    {% if user.is_authenticated %}
-        {% if user.role == "participant" %}
-            {% if is_joined %}
-                <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
-                    <p class="success">Вы зарегистрированы на этот хакатон.</p>
-
-                    {% if user_team %}
-                        <p><b>Ваша команда:</b> {{ user_team.team_name }}</p>
-
-                        <a class="btn" href="{% url 'team_detail' user_team.id %}">
-                            Открыть команду
-                        </a>
-
-                        <a class="btn" href="{% url 'submit_project' hackathon.id %}">
-                            {% if project %}
-                                Редактировать проект
-                            {% else %}
-                                Подать проект
-                            {% endif %}
-                        </a>
-                    {% else %}
-                        <p>Вы пока не состоите в команде.</p>
-
-                        <a class="btn" href="{% url 'create_team' hackathon.id %}">
-                            Создать команду
-                        </a>
-
-                        <a class="btn"
-                            href="{% url 'join_random_team' hackathon.id %}">
-
-                            Присоединиться случайно
-
-                        </a>
-
-                        <a class="btn" href="{% url 'join_team_by_code' hackathon.id %}">
-                            Вступить по invite code
-                        </a>
-                    {% endif %}
-                </div>
-                {% else %}
-                <div style="max-width: 650px; margin: 0 auto 20px auto; text-align: center;">
-                    {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
-                        <p style="color: #ef4444;">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
-                    {% else %}
-                        <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
-                            Зарегистрироваться на хакатон
-                        </a>
-                    {% endif %}
+            {% if hackathon.cover_image %}
+                <div class="hackathon-cover">
+                    <img src="{{ hackathon.cover_image.url }}" alt="{{ hackathon.title }}">
                 </div>
             {% endif %}
 
-        {% elif user.role == "mentor" %}
-            <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
-                <h2>Ментор</h2>
+            <div class="hackathon-detail-body">
+                {% if hackathon.description %}
+                    <div class="detail-section">
+                        <h2 class="detail-section__title">О хакатоне</h2>
+                        <p class="detail-section__text">{{ hackathon.description }}</p>
+                    </div>
+                {% endif %}
 
-                {% if is_joined %}
-                    <p class="success">Вы зарегистрированы на этот хакатон как ментор.</p>
+                <div class="detail-meta-grid">
+                    <div class="detail-meta-item">
+                        <span class="detail-meta-item__label">Формат</span>
+                        <span class="detail-meta-item__value">{{ hackathon.get_format_display|default:hackathon.format }}</span>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span class="detail-meta-item__label">Команда</span>
+                        <span class="detail-meta-item__value">{{ hackathon.min_team_size|default:2 }}–{{ hackathon.max_team_size|default:5 }} участников</span>
+                    </div>
+                </div>
 
-                    <a class="btn" href="{% url 'join_team_by_code' hackathon.id %}">
-                        Добавиться в команду по mentor code
-                    </a>
-                    {% else %}
-                    {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
-                        <p style="color: #ef4444;">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
-                    {% else %}
-                        <a class="btn" href="{% url 'join_hackathon' hackathon.id %}">
-                            Зарегистрироваться на хакатон
-                        </a>
+                <div class="detail-section detail-section--timer">
+                    {% with next_deadline=hackathon|get_current_deadline %}
+                        {% if next_deadline %}
+                            <div class="timer-pill timer-pill--large" data-countdown="{{ next_deadline }}">
+                                <span class="timer-pill__label">До конца этапа ({{ hackathon|get_current_stage_title }})</span>
+                                <span class="timer-countdown timer-pill__value">Считаем...</span>
+                            </div>
+                        {% else %}
+                            <div class="timer-pill timer-pill--done timer-pill--large">
+                                <span class="timer-pill__value">Хакатон завершён</span>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                {% if attachments %}
+                    {% if hackathon.status == "submission" or hackathon.status == "judging" or hackathon.status == "finished" or hackathon.status == "archived" %}
+                        <div class="detail-section">
+                            <h2 class="detail-section__title">Материалы</h2>
+                            <div class="attachments-block">
+                                {% for attachment in attachments %}
+                                    <p class="attachment-link">
+                                        <a href="{{ attachment.file.url }}" download>
+                                            Скачать: {{ attachment.title|default:attachment.file.name }}
+                                        </a>
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        </div>
                     {% endif %}
                 {% endif %}
             </div>
-        {% endif %}
+        </section>
 
-    {% else %}
-        <div class="card" style="max-width: 650px; margin: 0 auto 20px auto; padding: 20px;">
-            <p>Чтобы зарегистрироваться на хакатон, войдите в аккаунт.</p>
-            <a class="btn" href="{% url 'site_login' %}">Войти</a>
-        </div>
-    {% endif %}
-    {% if hackathon.status == 'finished' or hackathon.status == 'archived' %}
+        <aside class="hackathon-detail-aside">
+            {% if user.is_authenticated %}
+                {% if user.role == "participant" %}
+                    {% if is_joined %}
+                        <div class="aside-card">
+                            <h2 class="aside-card__title">Участник</h2>
+                            <p class="notice notice--success">Вы зарегистрированы на этот хакатон.</p>
 
-        <div class="card">
+                            {% if user_team %}
+                                <div class="aside-highlight">
+                                    <span class="aside-highlight__label">Ваша команда</span>
+                                    <strong>{{ user_team.team_name }}</strong>
+                                </div>
+                                <div class="stack-actions stack-actions--row">
+                                    <a class="btn btn-primary" href="{% url 'team_detail' user_team.id %}">Открыть команду</a>
+                                    <a class="btn btn-ghost" href="{% url 'submit_project' hackathon.id %}">
+                                        {% if project %}Редактировать проект{% else %}Подать проект{% endif %}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <p class="aside-card__hint">Вы пока не состоите в команде.</p>
+                                <div class="stack-actions">
+                                    <a class="btn btn-primary btn-block" href="{% url 'create_team' hackathon.id %}">Создать команду</a>
+                                    <a class="btn btn-ghost btn-block" href="{% url 'join_random_team' hackathon.id %}">Присоединиться случайно</a>
+                                    <a class="btn btn-ghost btn-block" href="{% url 'join_team_by_code' hackathon.id %}">Вступить по invite code</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="aside-card">
+                            {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
+                                <p class="notice notice--error">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
+                            {% else %}
+                                <h2 class="aside-card__title">Участие</h2>
+                                <p class="aside-card__hint">Зарегистрируйтесь, чтобы создать или вступить в команду.</p>
+                                <a class="btn btn-primary btn-block" href="{% url 'join_hackathon' hackathon.id %}">Зарегистрироваться</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
 
-            <h2>
-                Результаты хакатона
-            </h2>
+                {% elif user.role == "mentor" %}
+                    <div class="aside-card">
+                        <h2 class="aside-card__title">Ментор</h2>
+                        {% if is_joined %}
+                            <p class="notice notice--success">Вы зарегистрированы на этот хакатон как ментор.</p>
+                            <a class="btn btn-primary btn-block" href="{% url 'join_team_by_code' hackathon.id %}">Добавиться в команду по mentor code</a>
+                        {% else %}
+                            {% if hackathon.format == "intra" and hackathon.organizer.university and user.university != hackathon.organizer.university %}
+                                <p class="notice notice--error">Этот хакатон только для студентов {{ hackathon.organizer.university }}.</p>
+                            {% else %}
+                                <a class="btn btn-primary btn-block" href="{% url 'join_hackathon' hackathon.id %}">Зарегистрироваться на хакатон</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="aside-card">
+                    <h2 class="aside-card__title">Вход</h2>
+                    <p class="aside-card__hint">Чтобы зарегистрироваться на хакатон, войдите в аккаунт.</p>
+                    <a class="btn btn-primary btn-block" href="{% url 'site_login' %}">Войти</a>
+                </div>
+            {% endif %}
 
-            <a class="btn"
-            href="{% url 'leaderboard' hackathon.id %}">
+            {% if hackathon.status == 'finished' or hackathon.status == 'archived' %}
+                <div class="aside-card">
+                    <h2 class="aside-card__title">Результаты</h2>
+                    <a class="btn btn-ghost btn-block" href="{% url 'leaderboard' hackathon.id %}">Таблица лидеров</a>
+                </div>
+            {% endif %}
 
-                View Leaderboard
-
-            </a>
-
-        </div>
-
-    {% endif %}
-
-    <div class="card">
-
-        <h2>
-            Команды
-        </h2>
-
-        <p>
-            Посмотреть список всех команд хакатона
-        </p>
-
-        <a class="btn"
-        href="{% url 'hackathon_teams' hackathon.id %}">
-
-            Список команд
-
-        </a>
-
+            <div class="aside-card">
+                <h2 class="aside-card__title">Команды</h2>
+                <p class="aside-card__hint">Список всех команд хакатона</p>
+                <a class="btn btn-ghost" href="{% url 'hackathon_teams' hackathon.id %}">Список команд</a>
+            </div>
+        </aside>
     </div>
+</div>
 {% endblock %}

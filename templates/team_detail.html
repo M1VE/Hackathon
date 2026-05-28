@@ -1,110 +1,118 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ team.team_name }}</h1>
-<div style="margin-bottom: 20px;">
-    <a class="btn"
-       href="{% url 'hackathon_detail' team.hackathon.id %}">
-        ← Вернуться к хакатону
-    </a>
-</div>
-<div class="card">
-    <p><b>Хакатон:</b> {{ team.hackathon.title }}</p>
-    <p><b>Капитан:</b> {{ team.captain.full_name }} ({{ team.captain.email }})</p>
-    <p>
-        <b>Ментор:</b>
-        {% if team.mentor %}
-            {{ team.mentor.full_name }} ({{ team.mentor.email }})
-        {% else %}
-            Не назначен
-        {% endif %}
-    </p>
-    <p><b>Участников:</b> {{ team.members.count }}/{{ team.hackathon.max_team_size }}</p>
-    <p><b>Открыта для случайного добора:</b> {{ team.is_open_for_random_join }}</p>
-</div>
-
-{% if request.user == team.captain %}
-    <div class="card">
-        <h2>Приглашение в команду</h2>
-        <p>Передайте этот код участнику:</p>
-        <div style="font-size: 22px; font-weight: bold; letter-spacing: 2px; background: #0f172a; padding: 12px; border-radius: 10px; border: 1px solid #334155;">
-            {{ team.invite_code }}
+<div class="page-shell">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">{{ team.hackathon.title }}</span>
+            <h1 class="section-title">{{ team.team_name }}</h1>
         </div>
-        <p>Участник должен открыть страницу хакатона и нажать <b>"Вступить по invite code"</b>.</p>
-        <p>Ссылка на страницу ввода кода:</p>
-        <div style="background: #0f172a; padding: 12px; border-radius: 10px; border: 1px solid #334155; word-break: break-all;">
-            {{ request.scheme }}://{{ request.get_host }}{% url 'join_team_by_code' team.hackathon.id %}
+        <a class="btn btn-ghost" href="{% url 'hackathon_detail' team.hackathon.id %}">← К хакатону</a>
+    </div>
+
+    <div class="detail-grid">
+        <div>
+            <section class="panel">
+                <ul class="info-list">
+                    <li><span>Хакатон</span> {{ team.hackathon.title }}</li>
+                    <li><span>Капитан</span> {{ team.captain.full_name }} ({{ team.captain.email }})</li>
+                    <li>
+                        <span>Ментор</span>
+                        {% if team.mentor %}{{ team.mentor.full_name }} ({{ team.mentor.email }}){% else %}Не назначен{% endif %}
+                    </li>
+                    <li><span>Участников</span> {{ team.members.count }}/{{ team.hackathon.max_team_size }}</li>
+                    <li><span>Открыта для добора</span> {% if team.is_open_for_random_join %}Да{% else %}Нет{% endif %}</li>
+                </ul>
+            </section>
+
+            <section class="page-section">
+                <div class="page-section__head">
+                    <h2 class="page-section__title">Участники</h2>
+                </div>
+                {% if members %}
+                    <div class="cards-grid cards-grid--compact">
+                        {% for member in members %}
+                            <article class="team-card team-card--compact">
+                                <h3 class="team-card__title">{{ member.user.full_name }}</h3>
+                                <ul class="hackathon-card__meta">
+                                    <li><span>Email</span> {{ member.user.email }}</li>
+                                    <li><span>Университет</span> {{ member.user.university|default:"—" }}</li>
+                                    <li><span>Роль</span> {{ member.role_in_team }}</li>
+                                </ul>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state empty-state--inline">
+                        <p>В команде пока нет участников.</p>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="page-section">
+                <div class="page-section__head">
+                    <h2 class="page-section__title">Проект команды</h2>
+                </div>
+                {% if team.project %}
+                    <article class="panel">
+                        <h3 class="panel__title">{{ team.project.title }}</h3>
+                        <p class="page-lead">{{ team.project.description }}</p>
+                        {% if team.project.technologies %}
+                            <p><b>Технологии:</b> {{ team.project.technologies }}</p>
+                        {% endif %}
+                        {% if team.project.repository_url %}
+                            <p><a href="{{ team.project.repository_url }}" target="_blank" rel="noopener">Репозиторий</a></p>
+                        {% endif %}
+                        {% if team.project.project_file %}
+                            <p><a href="{{ team.project.project_file.url }}" target="_blank" rel="noopener">Файл проекта</a></p>
+                        {% endif %}
+                        {% if team.project.presentation_file %}
+                            <p><a href="{{ team.project.presentation_file.url }}" target="_blank" rel="noopener">Презентация</a></p>
+                        {% endif %}
+                        {% if team.project.image_file %}
+                            <p><a href="{{ team.project.image_file.url }}" target="_blank" rel="noopener">Изображение</a></p>
+                            <img src="{{ team.project.image_file.url }}" alt="Project" style="max-width:100%;border-radius:12px;margin-top:12px;">
+                        {% endif %}
+                        {% if team.project.video_file %}
+                            <video controls style="width:100%;max-width:100%;border-radius:12px;margin-top:12px;">
+                                <source src="{{ team.project.video_file.url }}">
+                            </video>
+                        {% endif %}
+                        {% if request.user == team.captain %}
+                            <div class="form-actions">
+                                <a class="btn btn-primary" href="{% url 'submit_project' team.hackathon.id %}">Редактировать проект</a>
+                            </div>
+                        {% endif %}
+                    </article>
+                {% else %}
+                    <div class="empty-state empty-state--inline">
+                        <p>Команда ещё не загрузила проект.</p>
+                        {% if request.user == team.captain %}
+                            <a class="btn btn-primary" href="{% url 'submit_project' team.hackathon.id %}">Подать проект</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </section>
         </div>
+
+        <aside>
+            {% if request.user == team.captain %}
+                <div class="aside-card">
+                    <h2 class="aside-card__title">Приглашение</h2>
+                    <p class="aside-card__hint">Передайте код участнику для вступления в команду.</p>
+                    <div class="code-box">{{ team.invite_code }}</div>
+                    <p class="aside-card__hint" style="margin-top:14px;">Страница ввода кода:</p>
+                    <div class="code-box" style="font-size:13px;letter-spacing:0;">{{ request.scheme }}://{{ request.get_host }}{% url 'join_team_by_code' team.hackathon.id %}</div>
+                </div>
+            {% endif %}
+
+            {% if user.role == 'organizer' %}
+                <div class="aside-card">
+                    <h2 class="aside-card__title">Ментор</h2>
+                    <a class="btn btn-primary btn-block" href="{% url 'assign_team_mentor' team.id %}">Назначить ментора</a>
+                </div>
+            {% endif %}
+        </aside>
     </div>
-{% endif %}
-
-<h2>Участники команды</h2>
-{% for member in members %}
-    <div class="card">
-        <h3>{{ member.user.full_name }}</h3>
-        <p>{{ member.user.email }}</p>
-        <p><b>Университет:</b> {{ member.user.university }}</p>
-        <p><b>Роль в команде:</b> {{ member.role_in_team }}</p>
-    </div>
-{% empty %}
-    <p>В команде пока нет участников.</p>
-{% endfor %}
-
-{% if user.role == 'organizer' %}
-    <div class="card">
-        <h2>Управление ментором</h2>
-        <p>Назначить или изменить ментора команды</p>
-        <a class="btn" href="{% url 'assign_team_mentor' team.id %}">Назначить ментора</a>
-    </div>
-{% endif %}
-
-<h2>Проект команды</h2>
-
-{% if team.project %}
-    <div class="card">
-        <h3 style="color: #38bdf8;">{{ team.project.title }}</h3>
-        <p>{{ team.project.description }}</p>
-
-        {% if team.project.technologies %}
-            <p><b>Технологии:</b> {{ team.project.technologies }}</p>
-        {% endif %}
-
-        {% if team.project.repository_url %}
-            <p><a href="{{ team.project.repository_url }}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">🔗 Репозиторий</a></p>
-        {% endif %}
-
-        {% if team.project.project_file %}
-            <p><a href="{{ team.project.project_file.url }}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">📦 Файл проекта / архив</a></p>
-        {% endif %}
-
-        {% if team.project.presentation_file %}
-            <p><a href="{{ team.project.presentation_file.url }}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">📊 Презентация</a></p>
-        {% endif %}
-
-        {% if team.project.image_file %}
-            <p><a href="{{ team.project.image_file.url }}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">🖼 Скриншот / изображение</a></p>
-            <img src="{{ team.project.image_file.url }}" alt="Project image" style="max-width: 100%; border-radius: 12px; margin-top: 12px;">
-        {% endif %}
-
-        {% if team.project.video_file %}
-            <p style="margin-top: 12px;"><b>Видео проекта:</b></p>
-            <video controls style="width: 100%; max-width: 100%; border-radius: 12px; margin-top: 8px;">
-                <source src="{{ team.project.video_file.url }}">
-            </video>
-            <p><a href="{{ team.project.video_file.url }}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">📥 Скачать видео</a></p>
-        {% endif %}
-
-        {% if request.user == team.captain %}
-            <a class="btn" href="{% url 'submit_project' team.hackathon.id %}" style="margin-top: 15px;">
-                Редактировать проект
-            </a>
-        {% endif %}
-    </div>
-{% else %}
-    <p>Команда ещё не загрузила проект.</p>
-    {% if request.user == team.captain %}
-        <a class="btn" href="{% url 'submit_project' team.hackathon.id %}">Подать проект</a>
-    {% endif %}
-{% endif %}
-
+</div>
 {% endblock %}

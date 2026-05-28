@@ -1,23 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Назначить жюри</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Организатор</span>
+            <h1 class="section-title">Назначить жюри</h1>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'manage_hackathon' hackathon.id %}">← Назад</a>
+    </div>
 
-<form method="post" class="form">
-    {% csrf_token %}
-
-    <label>Выберите жюри</label>
-
-    <select name="judge_id">
-        {% for judge in judges %}
-            <option value="{{ judge.id }}">
-                {{ judge.full_name }} ({{ judge.email }})
-            </option>
-        {% endfor %}
-    </select>
-
-    <button class="btn" type="submit">
-        Назначить
-    </button>
-</form>
+    <form method="post" class="form panel-form">
+        {% csrf_token %}
+        <label>Выберите жюри</label>
+        <select name="judge_id">
+            {% for judge in judges %}
+                <option value="{{ judge.id }}">{{ judge.full_name }} ({{ judge.email }})</option>
+            {% endfor %}
+        </select>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Назначить</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

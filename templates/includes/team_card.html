@@ -1,0 +1,72 @@
+<article class="team-card">
+
+    <div class="team-card__head">
+
+        <h3 class="team-card__title">{{ team.team_name }}</h3>
+
+        {% if team.is_open_for_random_join %}
+
+            <span class="team-open-badge team-open-badge--open">Открыта</span>
+
+        {% else %}
+
+            <span class="team-open-badge team-open-badge--closed">Закрыта</span>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <ul class="card-meta card-meta--plain">
+
+        <li>
+
+            <span class="card-meta__label">Капитан</span>
+
+            <span class="card-meta__value">{{ team.captain.full_name|default:team.captain.username }}</span>
+
+        </li>
+
+        <li>
+
+            <span class="card-meta__label">Университет</span>
+
+            <span class="card-meta__value">{{ team.captain.university|default:"—" }}</span>
+
+        </li>
+
+        <li>
+
+            <span class="card-meta__label">Ментор</span>
+
+            <span class="card-meta__value">{% if team.mentor %}{{ team.mentor.full_name|default:team.mentor.username }}{% else %}Не назначен{% endif %}</span>
+
+        </li>
+
+        <li>
+
+            <span class="card-meta__label">Участников</span>
+
+            <span class="card-meta__value">{{ team.members.count }}/{{ hackathon.max_team_size }}</span>
+
+        </li>
+
+    </ul>
+
+
+
+    <div class="hackathon-card__actions">
+
+        {% if user.is_authenticated and user.role == "participant" and team.is_open_for_random_join %}
+
+            <a class="btn btn-primary btn-sm" href="{% url 'join_open_team' hackathon.id team.id %}">Вступить</a>
+
+        {% endif %}
+
+        <a class="btn {% if user.is_authenticated and user.role == "participant" and team.is_open_for_random_join %}btn-ghost{% else %}btn-primary{% endif %} btn-sm" href="{% url 'team_detail' team.id %}">Открыть</a>
+
+    </div>
+
+</article>
+

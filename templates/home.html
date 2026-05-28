@@ -1,48 +1,264 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<section class="kronix-page kronix-page--flush">
+    <div class="kronix-hero-section" style="--hero-bg: url('{% static 'img/photo1.png' %}')">
+        <div class="kronix-content">
+            <div class="kronix-hero kronix-hero--overlay">
+                <h1>Покажи Свои<br>Навыки <em class="hero-accent">Миру</em> !</h1>
+                <p>Приходи со своей командой или найди её на месте: будем писать код, общаться и собирать проекты с нуля.</p>
+                <a class="kronix-cta" href="{% url 'site_register' %}">Начать!</a>
+            </div>
+        </div>
+    </div>
 
-<section class="hero">
-    <h1>Hackathon Platform</h1>
-    <p>
-        Управление хакатонами, командами,
-        проектами и оцениванием.
-    </p>
-    <a class="btn" href="{% url 'hackathon_list' %}">
-        Смотреть хакатоны
-    </a>
+    <div class="kronix-brands-section page-anchor" id="partners">
+        <div class="kronix-trusted-row">
+            <span class="kronix-trusted-line"></span>
+            <span class="kronix-trusted">НАШИ ПАРТНЕРЫ</span>
+            <span class="kronix-trusted-line"></span>
+        </div>
+        <div class="kronix-brands-track" id="brandsTrack">
+            <div class="kronix-brands-marquee" id="brandsMarquee">
+                <div class="kronix-brands-set">
+                    <div class="brand-logo-slot"><img src="{% static 'img/partner-iuk.png' %}" alt="Международный Университет Кыргызстана"></div>
+                    <div class="brand-logo-slot"><img src="{% static 'img/partner-nomad.png' %}" alt="Nomad College"></div>
+                    <div class="brand-logo-slot"><img src="{% static 'img/partner-iuk.png' %}" alt="Международный Университет Кыргызстана"></div>
+                    <div class="brand-logo-slot"><img src="{% static 'img/partner-nomad.png' %}" alt="Nomad College"></div>
+                    <div class="brand-logo-slot"><img src="{% static 'img/partner-iuk.png' %}" alt="Международный Университет Кыргызстана"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kronix-content kronix-content--lower">
+        <section class="kronix-info page-anchor" id="about">
+            <span class="section-eyebrow">КАК ВСЕ ПРОХОДИТ</span>
+            <div class="kronix-info-grid">
+                <h2 class="section-title">Проведи выходные с пользой и прокачивай свои навыки.</h2>
+                <div class="kronix-info-side">
+                    <p>Мы берем на себя всю организацию, поиск экспертов и подготовку задач. Тебе нужно только зарегистрироваться и взять с собой ноутбук. На старте будет созвон, чтобы познакомиться и обсудить задачи.</p>
+                    <a class="kronix-cta ghost" href="{% url 'site_register' %}">Занять место</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="kronix-steps kronix-steps--timeline page-anchor" id="steps">
+            <div class="steps-timeline">
+                <article class="step-item">
+                    <div class="step-row">
+                        <div class="step-dot">01</div>
+                        <div class="step-line" aria-hidden="true"></div>
+                    </div>
+                    <h3>Заявка и команда</h3>
+                    <p>Регистрируешься на сайте. Если у тебя еще нет команды — вообще не проблема, мы поможем собраться в чате или прямо на открытии.</p>
+                </article>
+                <article class="step-item">
+                    <div class="step-row">
+                        <div class="step-dot">02</div>
+                        <div class="step-line" aria-hidden="true"></div>
+                    </div>
+                    <h3>Кодинг и поддержка</h3>
+                    <p>Берем задачи и начинаем писать код. На протяжении всего времени рядом будут менторы, которым можно задать любой вопрос, если где-то застряли.</p>
+                </article>
+                <article class="step-item">
+                    <div class="step-row">
+                        <div class="step-dot">03</div>
+                    </div>
+                    <h3>Финал и призы</h3>
+                    <p>Показываем рабочие прототипы жюри. Никаких скучных презентаций — только реальный софт, честный фидбэк и награждение лучших.</p>
+                </article>
+            </div>
+        </section>
+    </div>
+
+    <section class="home-diary page-anchor" id="diary">
+        <div class="kronix-content">
+            <span class="section-eyebrow">КАК ЭТО БЫЛО</span>
+            <h2 class="section-title diary-title">Дневник проекта</h2>
+            <div class="diary-grid">
+                <article class="diary-card">
+                    <div class="diary-card-media" style="background-image: url('{% static 'img/diary-1.jpg' %}')"></div>
+                    <span class="diary-date">23 июля 2024</span>
+                    <h3>Хакатон среди дизайнеров</h3>
+                </article>
+                <article class="diary-card">
+                    <div class="diary-card-media" style="background-image: url('{% static 'img/diary-2.jpg' %}')"></div>
+                    <span class="diary-date">15 августа 2024</span>
+                    <h3>Хакатон-марафон среди разработчиков</h3>
+                </article>
+                <article class="diary-card">
+                    <div class="diary-card-media" style="background-image: url('{% static 'img/diary-3.jpg' %}')"></div>
+                    <span class="diary-date">2 сентября 2024</span>
+                    <h3>Награждение победителей среди всех хакатонов</h3>
+                </article>
+                <article class="diary-card">
+                    <div class="diary-card-media" style="background-image: url('{% static 'img/diary-4.jpg' %}')"></div>
+                    <span class="diary-date">10 октября 2024</span>
+                    <h3>Процесс создания групповых проектов</h3>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-faq">
+        <div class="kronix-content">
+            <span class="section-eyebrow page-anchor" id="faq">FAQ</span>
+            <h2 class="section-title faq-title">Частозадаваемые вопросы</h2>
+            <p class="faq-subtitle">Все, что обычно хочется узнать перед регистрацией</p>
+            <div class="faq-accordion">
+                <details class="faq-item" open>
+                    <summary>Кто может участвовать?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>Да кто угодно: студенты, практикующие разработчики, дизайнеры или аналитики. Главное — желание кодить и делать проекты. По возрасту — строго от 18 лет. Оптимальный размер команды — от 2 до 4 человек.</p></div></div>
+                </details>
+                <details class="faq-item">
+                    <summary>Что мы будем создавать?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>На старте мы дадим несколько понятных треков и задач на выбор (например, веб-сервис или мобильное приложение). Вам нужно будет за выходные собрать рабочий прототип, который решает одну из этих задач.</p></div></div>
+                </details>
+                <details class="faq-item">
+                    <summary>Нужна ли мне команда заранее?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>Вообще не обязательно. Можно зарегистрироваться одному, а команду найти в нашем чате участников или прямо на созвоне/встрече перед открытием. Мы обязательно поможем всем объединиться.</p></div></div>
+                </details>
+                <details class="faq-item">
+                    <summary>Участие платное?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>Нет, всё абсолютно бесплатно. С вас — ноутбук и классные идеи, с нас — организация, задачи и призы.</p></div></div>
+                </details>
+                <details class="faq-item">
+                    <summary>Как будут оценивать проекты?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>Жюри смотрит на две вещи: работает ли ваш прототип (написан ли реальный код) и решает ли он поставленную задачу.</p></div></div>
+                </details>
+                <details class="faq-item">
+                    <summary>Можно принести готовый проект или старый код?</summary>
+                    <div class="faq-item__body"><div class="faq-item__inner"><p>Проекты должны быть написаны с нуля за время хакатона. Использовать готовые открытые библиотеки или фреймворки, конечно, можно, а вот приносить свои старые наработки — нет.</p></div></div>
+                </details>
+            </div>
+        </div>
+    </section>
 </section>
 
-<h2>Активные хакатоны</h2>
-<div class="grid">
-    {% for hackathon in active_hackathons %}
-        <div class="hackathon-card">
-            <h3>{{ hackathon.title }}</h3>
-            <p>{{ hackathon.description|truncatewords:10 }}</p>
-            <p><b>Статус:</b> {{ hackathon.status }}</p>
-            <a href="{% url 'hackathon_detail' hackathon.id %}" class="btn">Подробнее</a>
-        </div>
-    {% empty %}
-        <p style="color: #a0aec0; grid-column: 1/-1;">В данный момент нет активных хакатонов.</p>
-    {% endfor %}
-</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const faqItems = document.querySelectorAll(".faq-item");
+    faqItems.forEach((item) => {
+        const summary = item.querySelector("summary");
+        const body = item.querySelector(".faq-item__body");
+        if (!summary || !body) return;
 
-<h2 style="margin-top: 50px; color: #9ca3af;">Завершенные хакатоны</h2>
-<div class="grid" style="opacity: 0.85;"> 
-    {% for hackathon in past_hackathons %}
-        <div class="hackathon-card" style="background: #1f2937; border-color: #374151;">
-            <h3>{{ hackathon.title }}</h3>
-            <p>{{ hackathon.description|truncatewords:10 }}</p>
-            
-            <p style="color: #ef4444; font-weight: 500;">
-                Хакатон завершен 🎉
-            </p>
-            
-            <a href="{% url 'hackathon_detail' hackathon.id %}" class="btn" style="background: #4b5563;">Подробнее</a>
-        </div>
-    {% empty %}
-        <p style="color: #a0aec0; grid-column: 1/-1;">Список завершенных хакатонов пуст.</p>
-    {% endfor %}
-</div>
+        if (item.open) item.classList.add("is-open");
 
+        summary.addEventListener("click", (event) => {
+            event.preventDefault();
+            const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (item.classList.contains("is-open")) {
+                item.classList.remove("is-open");
+                const finish = () => item.removeAttribute("open");
+                if (reducedMotion) {
+                    finish();
+                    return;
+                }
+                const onEnd = (e) => {
+                    if (e.target !== body || e.propertyName !== "grid-template-rows") return;
+                    finish();
+                    body.removeEventListener("transitionend", onEnd);
+                };
+                body.addEventListener("transitionend", onEnd);
+            } else {
+                item.setAttribute("open", "");
+                requestAnimationFrame(() => item.classList.add("is-open"));
+            }
+        });
+    });
+
+    const track = document.getElementById("brandsTrack");
+    const marquee = document.getElementById("brandsMarquee");
+    if (!track || !marquee) return;
+
+    const waitImages = (root) => Promise.all(
+        Array.from(root.querySelectorAll("img")).map((img) => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+                img.addEventListener("load", resolve, { once: true });
+                img.addEventListener("error", resolve, { once: true });
+            });
+        })
+    );
+
+    let resizeTimer;
+
+    const setupMarquee = async () => {
+        const firstSet = marquee.querySelector(".kronix-brands-set");
+        if (!firstSet) return;
+
+        marquee.style.animation = "none";
+        marquee.querySelectorAll(".kronix-brands-set:not(:first-child)").forEach((set) => set.remove());
+
+        await waitImages(firstSet);
+
+        const trackWidth = track.getBoundingClientRect().width;
+        let setCount = 1;
+
+        while (marquee.scrollWidth < trackWidth * 2) {
+            const clone = firstSet.cloneNode(true);
+            clone.setAttribute("aria-hidden", "true");
+            marquee.appendChild(clone);
+            setCount += 1;
+        }
+
+        if (setCount % 2 !== 0) {
+            const clone = firstSet.cloneNode(true);
+            clone.setAttribute("aria-hidden", "true");
+            marquee.appendChild(clone);
+        }
+
+        const loopWidth = marquee.scrollWidth / 2;
+        const duration = Math.max(loopWidth / 55, 18);
+        marquee.style.setProperty("--marquee-duration", duration + "s");
+
+        void marquee.offsetWidth;
+        marquee.style.animation = "";
+    };
+
+    setupMarquee();
+
+    window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(setupMarquee, 150);
+    });
+
+    track.addEventListener("mouseenter", function () {
+        marquee.style.animationPlayState = "paused";
+    });
+    track.addEventListener("mouseleave", function () {
+        marquee.style.animationPlayState = "running";
+    });
+
+    const diaryCards = document.querySelectorAll(".diary-card");
+    if (diaryCards.length) {
+        const revealDiary = () => {
+            diaryCards.forEach((card, index) => {
+                setTimeout(() => card.classList.add("is-visible"), index * 90);
+            });
+        };
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            revealDiary();
+        } else {
+            const diaryObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        const card = entry.target;
+                        const index = Array.prototype.indexOf.call(diaryCards, card);
+                        setTimeout(() => card.classList.add("is-visible"), index * 90);
+                        diaryObserver.unobserve(card);
+                    });
+                },
+                { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
+            );
+            diaryCards.forEach((card) => diaryObserver.observe(card));
+        }
+    }
+});
+</script>
 {% endblock %}

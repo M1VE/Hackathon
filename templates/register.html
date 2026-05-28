@@ -1,26 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Регистрация</h1>
-<form method="post" class="form">
-    {% csrf_token %}
-    <label>Полное имя</label>
-    <input type="text" name="full_name" required>
-    <label>Email</label>
-    <input type="email" name="email" required>
-    <label>Университет</label>
-    <select name="university" required>
-        <option value="">Выберите университет</option>
-        {% for university in universities %}
-            <option value="{{ university.id }}">{{ university.name }}</option>
-        {% endfor %}
-    </select>
-    <label>Пароль</label>
-    <input type="password" name="password" required>
-    <label>Роль</label>
-    <select name="role" required>
-        <option value="participant">Участник</option>
-        <option value="mentor">Ментор</option>
-    </select>
-    <button class="btn" type="submit" style="margin-top: 25px;">Зарегистрироваться</button>
-</form>
+<section class="auth-shell">
+    <h1 class="auth-title">Регистрация</h1>
+    <p class="auth-subtitle">Создайте аккаунт участника или ментора и присоединяйтесь к хакатонам.</p>
+
+    <form method="post" class="form auth-form">
+        {% csrf_token %}
+
+        <label for="full_name">Полное имя</label>
+        <input id="full_name" type="text" name="full_name" placeholder="Иван Иванов" required>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="name@example.com" required>
+
+        <label for="university">Университет</label>
+        <select id="university" name="university" required>
+            <option value="">Выберите университет</option>
+            {% for university in universities %}
+                <option value="{{ university.id }}">{{ university.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="password">Пароль</label>
+        <input id="password" type="password" name="password" placeholder="Минимум 8 символов" required>
+
+        <label for="role">Роль</label>
+        <select id="role" name="role" required>
+            <option value="participant">Участник</option>
+            <option value="mentor">Ментор</option>
+        </select>
+
+        <button class="btn btn-primary auth-submit" type="submit">Зарегистрироваться</button>
+    </form>
+</section>
 {% endblock %}

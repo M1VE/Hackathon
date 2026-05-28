@@ -1,63 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Создать хакатон</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Организатор</span>
+            <h1 class="section-title">Создать хакатон</h1>
+            <p class="page-lead">Заполните основные данные и дедлайны этапов.</p>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'organizer_dashboard' %}">← В кабинет</a>
+    </div>
 
-<form method="post" enctype="multipart/form-data" class="form">
-    {% csrf_token %}
+    <form method="post" enctype="multipart/form-data" class="form panel-form">
+        {% csrf_token %}
 
-    <label>Название</label>
-    <input type="text" name="title" required>
+        <label>Название</label>
+        <input type="text" name="title" placeholder="Например: Nomads Area" required>
 
-    <label>Описание</label>
-    <textarea name="description" required></textarea>
+        <label>Описание</label>
+        <textarea name="description" placeholder="Кратко опишите формат и цели" required></textarea>
 
-    <label>Формат</label>
-    <select name="format">
-        <option value="intra">Внутривузовский</option>
-        <option value="inter">Межвузовский</option>
-    </select>
+        <label>Формат</label>
+        <select name="format">
+            <option value="intra">Внутривузовский</option>
+            <option value="inter">Межвузовский</option>
+        </select>
 
-    <label>Статус</label>
-    <select name="status">
-        <option value="draft">Draft</option>
-        <option value="registration">Registration</option>
-        <option value="team_building">Team Building</option>
-        <option value="submission">Submission</option>
-        <option value="judging">Judging</option>
-        <option value="finished">Finished</option>
-    </select>
+        <label>Статус</label>
+        <select name="status">
+            <option value="draft">Draft</option>
+            <option value="registration">Registration</option>
+            <option value="team_building">Team Building</option>
+            <option value="submission">Submission</option>
+            <option value="judging">Judging</option>
+            <option value="finished">Finished</option>
+        </select>
 
-    <label>Минимум участников</label>
-    <input type="number" name="min_team_size" value="2" min="1">
+        <label>Минимум участников</label>
+        <input type="number" name="min_team_size" value="2" min="1">
 
-    <label>Максимум участников</label>
-    <input type="number" name="max_team_size" value="5" min="2">
+        <label>Максимум участников</label>
+        <input type="number" name="max_team_size" value="5" min="2">
 
+        <label>PDF / файл правил</label>
+        <input type="file" name="rules_file">
 
-    <label>PDF / файл правил</label>
-    <input type="file" name="rules_file">
+        <label>Картинка хакатона</label>
+        <input type="file" name="cover_image" accept="image/*">
 
-    <label>Картинка хакатона</label>
-    <input type="file" name="cover_image" accept="image/*">
+        <h3 class="form-section-title">Дедлайны</h3>
 
-    <h3 style="margin-top: 30px; border-top: 1px solid #334155; padding-top: 20px;">Дедлайны</h3>
+        <label>Регистрация до</label>
+        <input type="datetime-local" name="registration_deadline">
 
-    <label>Регистрация до</label>
-    <input type="datetime-local" name="registration_deadline">
+        <label>Формирование команд до</label>
+        <input type="datetime-local" name="team_building_deadline">
 
-    <label>Формирование команд до</label>
-    <input type="datetime-local" name="team_building_deadline">
+        <label>Подача проектов до</label>
+        <input type="datetime-local" name="submission_deadline">
 
-    <label>Подача проектов до</label>
-    <input type="datetime-local" name="submission_deadline">
+        <label>Оценивание до</label>
+        <input type="datetime-local" name="judging_deadline">
 
-    <label>Оценивание до</label>
-    <input type="datetime-local" name="judging_deadline">
+        <label>Публикация результатов</label>
+        <input type="datetime-local" name="results_deadline">
 
-    <label>Публикация результатов</label>
-    <input type="datetime-local" name="results_deadline">
-
-    <button class="btn" type="submit" style="margin-top: 25px;">Создать</button>
-</form>
+        <button class="btn btn-primary form-submit" type="submit">Создать хакатон</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,0 +1,104 @@
+{% load hackathon_tags %}
+
+
+
+<article class="hackathon-card{% if hackathon.status == 'finished' or hackathon.status == 'archived' %} hackathon-card--ended{% endif %}">
+
+    <div class="hackathon-card__head">
+
+        <h3 class="hackathon-card__title">
+
+            <a href="{% url 'hackathon_detail' hackathon.id %}">{{ hackathon.title }}</a>
+
+        </h3>
+
+        <span class="status-badge status-{{ hackathon.status }}">{{ hackathon.get_status_display }}</span>
+
+    </div>
+
+
+
+    {% if hackathon.description %}
+
+        <p class="hackathon-card__desc">{{ hackathon.description|truncatewords:22 }}</p>
+
+    {% endif %}
+
+
+
+    <div class="hackathon-card__footer">
+
+        <ul class="card-meta card-meta--plain card-meta--inline">
+
+            <li>
+
+                <span class="card-meta__label">Формат</span>
+
+                <span class="card-meta__value">{{ hackathon.get_format_display|default:hackathon.format }}</span>
+
+            </li>
+
+            {% if hackathon.min_team_size and hackathon.max_team_size %}
+
+                <li>
+
+                    <span class="card-meta__label">Команда</span>
+
+                    <span class="card-meta__value">{{ hackathon.min_team_size }}–{{ hackathon.max_team_size }} чел.</span>
+
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+
+
+        {% with next_deadline=hackathon|get_current_deadline %}
+
+            {% if next_deadline %}
+
+                <div class="card-timer card-timer--minimal" data-countdown="{{ next_deadline }}">
+
+                    <span class="card-timer__meta">{{ hackathon|get_current_stage_title }} · до конца этапа</span>
+
+                    <span class="card-timer__value timer-countdown">—</span>
+
+                </div>
+
+            {% elif hackathon.status == 'finished' or hackathon.status == 'archived' %}
+
+                <div class="card-timer card-timer--minimal card-timer--done">
+
+                    <span class="card-timer__meta">Статус</span>
+
+                    <span class="card-timer__value">Хакатон завершён</span>
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+    </div>
+
+
+
+    <div class="hackathon-card__actions">
+
+        {% if organizer_mode %}
+
+            <a class="btn btn-primary" href="{% url 'manage_hackathon' hackathon.id %}">Управлять</a>
+
+            <a class="btn btn-ghost" href="{% url 'hackathon_detail' hackathon.id %}">Страница хакатона</a>
+
+        {% else %}
+
+            <a class="btn btn-primary" href="{% url 'hackathon_detail' hackathon.id %}">Открыть</a>
+
+        {% endif %}
+
+    </div>
+
+</article>
+

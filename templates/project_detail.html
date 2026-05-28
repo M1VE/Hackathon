@@ -1,76 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="card">
-
-    <h1>{{ project.title }}</h1>
-
-    <p>
-        <b>Команда:</b>
-        {{ project.team.team_name }}
-    </p>
-
-    <p>
-        <b>Описание:</b>
-        {{ project.description }}
-    </p>
-
-    <p>
-        <b>Технологии:</b>
-        {{ project.technologies }}
-    </p>
-
-    <p>
-        <b>Общий балл:</b>
-        {{ total_score }}
-    </p>
-
-</div>
-
-<div class="card">
-
-    <h2>
-        Оценки жюри
-    </h2>
-
-    {% for score in scores %}
-
-        <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #374151;">
-
-            <p>
-                <b>Жюри:</b>
-                {{ score.assignment.judge.user.full_name }}
-            </p>
-
-            <p>
-                <b>Критерий:</b>
-                {{ score.criterion.name }}
-            </p>
-
-            <p>
-                <b>Балл:</b>
-                {{ score.score_value }}
-                / {{ score.criterion.max_score }}
-            </p>
-
-            {% if score.comment %}
-                <p>
-                    <b>Комментарий:</b>
-                    {{ score.comment }}
-                </p>
-            {% endif %}
-
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Проект</span>
+            <h1 class="section-title">{{ project.title }}</h1>
+            <p class="page-lead">Команда {{ project.team.team_name }}</p>
         </div>
+    </div>
 
-    {% empty %}
+    <section class="panel">
+        <p>{{ project.description }}</p>
+        {% if project.technologies %}
+            <p><b>Технологии:</b> {{ project.technologies }}</p>
+        {% endif %}
+        <p><b>Общий балл:</b> {{ total_score }}</p>
+    </section>
 
-        <p>
-            Пока нет оценок.
-        </p>
-
-    {% endfor %}
-
+    <section class="page-section">
+        <div class="page-section__head"><h2 class="page-section__title">Оценки жюри</h2></div>
+        {% if scores %}
+            {% for score in scores %}
+                <article class="panel" style="margin-bottom:14px;padding:20px;">
+                    <ul class="info-list">
+                        <li><span>Жюри</span> {{ score.assignment.judge.user.full_name }}</li>
+                        <li><span>Критерий</span> {{ score.criterion.name }}</li>
+                        <li><span>Балл</span> {{ score.score_value }} / {{ score.criterion.max_score }}</li>
+                    </ul>
+                    {% if score.comment %}
+                        <p style="margin-top:12px;"><b>Комментарий:</b> {{ score.comment }}</p>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state empty-state--inline"><p>Пока нет оценок.</p></div>
+        {% endif %}
+    </section>
 </div>
-
 {% endblock %}

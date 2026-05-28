@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Вход</h1>
+<section class="auth-shell">
+    <h1 class="auth-title">Вход</h1>
+    <p class="auth-subtitle">Войдите в аккаунт, чтобы перейти в личный кабинет.</p>
 
-<form method="post" class="form">
-    {% csrf_token %}
+    <form method="post" class="form auth-form">
+        {% csrf_token %}
 
-    <label>Email</label>
-    <input type="email" name="email" required>
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="name@example.com" required>
 
-    <label>Пароль</label>
-    <input type="password" name="password" required>
+        <label for="password">Пароль</label>
+        <input id="password" type="password" name="password" placeholder="Введите пароль" required>
 
-    <button class="btn" type="submit">Войти</button>
-</form>
+        <button class="btn btn-primary auth-submit" type="submit">Войти</button>
+    </form>
+</section>
 {% endblock %}

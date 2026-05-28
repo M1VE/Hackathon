@@ -1,22 +1,70 @@
 {% extends "base.html" %}
 
+
+
 {% block content %}
-<h1>Кабинет организатора</h1>
 
-<a class="btn" href="{% url 'create_hackathon' %}">Создать хакатон</a>
+<div class="page-shell page-shell--comfortable">
 
-<h2>Мои хакатоны</h2>
+    <div class="page-top page-top--start">
 
-{% for hackathon in hackathons %}
-    <div class="card">
-        <h3>{{ hackathon.title }}</h3>
-        <p>{{ hackathon.description|truncatechars:150 }}</p>
-        <p><b>Статус:</b> {{ hackathon.status }}</p>
-        <p><b>Опубликован:</b> {{ hackathon.is_published }}</p>
+        <div>
 
-        <a class="btn" href="{% url 'manage_hackathon' hackathon.id %}">Управлять</a>
+            <span class="section-eyebrow">Личный кабинет</span>
+
+            <h1 class="section-title">Кабинет организатора</h1>
+
+            <p class="page-lead">Создавайте хакатоны, следите за этапами и управляйте командами в одном месте.</p>
+
+        </div>
+
+        <a class="btn btn-primary btn-lg" href="{% url 'create_hackathon' %}">+ Создать хакатон</a>
+
     </div>
-{% empty %}
-    <p>У вас пока нет хакатонов.</p>
-{% endfor %}
+
+
+
+    <section class="page-section">
+
+        <div class="page-section__head">
+
+            <h2 class="page-section__title">Мои хакатоны</h2>
+
+            <p class="page-section__hint">{{ hackathons|length }} событий в вашем профиле</p>
+
+        </div>
+
+
+
+        {% if hackathons %}
+
+            <div class="cards-grid">
+
+                {% for hackathon in hackathons %}
+
+                    {% include "includes/hackathon_card.html" with hackathon=hackathon organizer_mode=True %}
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <h3>Пока нет хакатонов</h3>
+
+                <p>Создайте первый хакатон — участники смогут регистрироваться после публикации.</p>
+
+                <a class="btn btn-primary" href="{% url 'create_hackathon' %}">Создать хакатон</a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
 {% endblock %}
+

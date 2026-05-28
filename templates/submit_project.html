@@ -1,54 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 style="text-align: center;">Подача проекта</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Проект</span>
+            <h1 class="section-title">Подача проекта</h1>
+            <p class="page-lead">Заполните описание и прикрепите материалы команды.</p>
+        </div>
+    </div>
 
-<form method="post" enctype="multipart/form-data" class="form" style="max-width: 600px; margin: 0 auto;">
-    {% csrf_token %}
+    <form method="post" enctype="multipart/form-data" class="form panel-form">
+        {% csrf_token %}
 
-    <label>Название проекта</label>
-    <input type="text" name="title" value="{{ project.title|default:'' }}" required>
+        <label>Название проекта</label>
+        <input type="text" name="title" value="{{ project.title|default:'' }}" required>
 
-    <label>Описание проекта</label>
-    <textarea name="description" required>{{ project.description|default:'' }}</textarea>
+        <label>Описание проекта</label>
+        <textarea name="description" required>{{ project.description|default:'' }}</textarea>
 
-    <label>Технологии</label>
-    <textarea name="technologies">{{ project.technologies|default:'' }}</textarea>
+        <label>Технологии</label>
+        <textarea name="technologies">{{ project.technologies|default:'' }}</textarea>
 
-    <label>Ссылка на проект (GitHub/репозиторий)</label>
-    <input type="url" name="repository_url" value="{{ project.repository_url|default:'' }}">
+        <label>Ссылка на репозиторий</label>
+        <input type="url" name="repository_url" value="{{ project.repository_url|default:'' }}">
 
-    <label>Архив / файл проекта</label>
-    <input type="file" name="project_file">
+        <label>Архив / файл проекта</label>
+        <input type="file" name="project_file">
+        {% if project.project_file %}
+            <p><a href="{{ project.project_file.url }}" target="_blank" rel="noopener">Текущий файл проекта</a></p>
+        {% endif %}
 
-    {% if project.project_file %}
-        <p><a href="{{ project.project_file.url }}" target="_blank">Скачать текущий файл проекта</a></p>
-    {% endif %}
+        <label>Презентация</label>
+        <input type="file" name="presentation_file">
+        {% if project.presentation_file %}
+            <p><a href="{{ project.presentation_file.url }}" target="_blank" rel="noopener">Текущая презентация</a></p>
+        {% endif %}
 
-    <label>Презентация</label>
-    <input type="file" name="presentation_file">
+        <label>Изображение проекта</label>
+        <input type="file" name="image_file" accept="image/*">
+        {% if project.image_file %}
+            <img src="{{ project.image_file.url }}" alt="" style="max-width:300px;border-radius:12px;margin-top:10px;">
+        {% endif %}
 
-    {% if project.presentation_file %}
-        <p><a href="{{ project.presentation_file.url }}" target="_blank">Скачать текущую презентацию</a></p>
-    {% endif %}
+        <label>Видео (mp4/webm)</label>
+        <input type="file" name="video_file" accept="video/*">
+        {% if project.video_file %}
+            <video controls style="width:100%;max-width:100%;margin-top:10px;border-radius:12px;">
+                <source src="{{ project.video_file.url }}">
+            </video>
+        {% endif %}
 
-    <label>Изображение проекта</label>
-    <input type="file" name="image_file" accept="image/*">
-
-    {% if project.image_file %}
-        <img src="{{ project.image_file.url }}" style="max-width: 300px; border-radius: 12px; margin-top: 10px;">
-    {% endif %}
-
-    <label>Видео проекта (mp4/webm)</label>
-    <input type="file" name="video_file" accept="video/*">
-
-    {% if project.video_file %}
-        <video controls style="width: 100%; max-width: 100%; margin-top: 10px; border-radius: 12px;">
-            <source src="{{ project.video_file.url }}">
-        </video>
-        <p><a href="{{ project.video_file.url }}" target="_blank">Открыть видео</a></p>
-    {% endif %}
-
-    <button class="btn" type="submit">Сохранить проект</button>
-</form>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Сохранить проект</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

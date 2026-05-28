@@ -1,116 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Оценка проекта: {{ assignment.project.title }}</h1>
-
-<div class="card">
-    <h2>{{ assignment.project.title }}</h2>
-
-    <p><b>Команда:</b> {{ assignment.project.team.team_name }}</p>
-    <p><b>Хакатон:</b> {{ assignment.judge.hackathon.title }}</p>
-
-    <p>{{ assignment.project.description }}</p>
-
-    {% if assignment.project.technologies %}
-        <p><b>Технологии:</b> {{ assignment.project.technologies }}</p>
-    {% endif %}
-
-    {% if assignment.project.project_url %}
-        <p>
-            <a href="{{ assignment.project.project_url }}" target="_blank">
-                Ссылка на проект
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.repository_url %}
-        <p>
-            <a href="{{ assignment.project.repository_url }}" target="_blank">
-                Репозиторий
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.demo_url %}
-        <p>
-            <a href="{{ assignment.project.demo_url }}" target="_blank">
-                Демо
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.video_url %}
-        <p>
-            <a href="{{ assignment.project.video_url }}" target="_blank">
-                Видео презентация
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.project_file %}
-        <p>
-            <a href="{{ assignment.project.project_file.url }}" target="_blank">
-                Файл проекта / архив
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.presentation_file %}
-        <p>
-            <a href="{{ assignment.project.presentation_file.url }}" target="_blank">
-                Презентация
-            </a>
-        </p>
-    {% endif %}
-
-    {% if assignment.project.image_file %}
-        <p>
-            <a href="{{ assignment.project.image_file.url }}" target="_blank">
-                Скриншот / изображение
-            </a>
-        </p>
-
-        <img
-            src="{{ assignment.project.image_file.url }}"
-            alt="Project image"
-            style="max-width: 100%; border-radius: 12px; margin-top: 12px;"
-        >
-    {% endif %}
-</div>
-
-<form method="post" class="form">
-    {% csrf_token %}
-
-    {% for criterion in criteria %}
-        <div class="card">
-            <h3>{{ criterion.name }}</h3>
-
-            <p>
-                <b>Максимальный балл:</b> {{ criterion.max_score }}
-                |
-                <b>Вес:</b> {{ criterion.weight }}
-            </p>
-
-            <label>Балл</label>
-            <input
-                type="number"
-                name="score_{{ criterion.id }}"
-                min="0"
-                max="{{ criterion.max_score }}"
-                required
-            >
-
-            <label>Комментарий</label>
-            <textarea name="comment_{{ criterion.id }}"></textarea>
+<div class="page-shell">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Жюри</span>
+            <h1 class="section-title">Оценка: {{ assignment.project.title }}</h1>
+            <p class="page-lead">Команда {{ assignment.project.team.team_name }} · {{ assignment.judge.hackathon.title }}</p>
         </div>
-    {% empty %}
-        <p>Критерии оценивания ещё не созданы.</p>
-    {% endfor %}
+    </div>
 
-    {% if criteria %}
-        <button class="btn" type="submit">
-            Сохранить оценки
-        </button>
-    {% endif %}
-</form>
+    <section class="panel" style="margin-bottom:28px;">
+        <p>{{ assignment.project.description }}</p>
+        {% if assignment.project.technologies %}
+            <p><b>Технологии:</b> {{ assignment.project.technologies }}</p>
+        {% endif %}
+        {% if assignment.project.repository_url %}
+            <p><a href="{{ assignment.project.repository_url }}" target="_blank" rel="noopener">Репозиторий</a></p>
+        {% endif %}
+        {% if assignment.project.project_file %}
+            <p><a href="{{ assignment.project.project_file.url }}" target="_blank" rel="noopener">Файл проекта</a></p>
+        {% endif %}
+        {% if assignment.project.presentation_file %}
+            <p><a href="{{ assignment.project.presentation_file.url }}" target="_blank" rel="noopener">Презентация</a></p>
+        {% endif %}
+        {% if assignment.project.image_file %}
+            <img src="{{ assignment.project.image_file.url }}" alt="" style="max-width:100%;border-radius:12px;margin-top:12px;">
+        {% endif %}
+    </section>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for criterion in criteria %}
+            <section class="panel" style="margin-bottom:16px;">
+                <h3 class="panel__title">{{ criterion.name }}</h3>
+                <p class="aside-card__hint">Макс. {{ criterion.max_score }} · вес {{ criterion.weight }}</p>
+                <label>Балл</label>
+                <input type="number" name="score_{{ criterion.id }}" min="0" max="{{ criterion.max_score }}" required>
+                <label>Комментарий</label>
+                <textarea name="comment_{{ criterion.id }}"></textarea>
+            </section>
+        {% empty %}
+            <p class="page-lead">Критерии оценивания ещё не созданы.</p>
+        {% endfor %}
+        {% if criteria %}
+            <button class="btn btn-primary" type="submit">Сохранить оценки</button>
+        {% endif %}
+    </form>
+</div>
 {% endblock %}

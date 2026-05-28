@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Удаление хакатона</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Организатор</span>
+            <h1 class="section-title">Удаление хакатона</h1>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'manage_hackathon' hackathon.pk %}">Отмена</a>
+    </div>
 
-<div class="card">
-    <h2>{{ hackathon.title }}</h2>
-
-    <p>
-        Вы действительно хотите удалить этот хакатон?
-    </p>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <button class="btn danger" type="submit">
-            Удалить
-        </button>
-    </form>
+    <section class="panel">
+        <h2 class="panel__title">{{ hackathon.title }}</h2>
+        <p class="page-lead">Вы действительно хотите удалить этот хакатон? Это действие необратимо.</p>
+        <form method="post" class="form-actions" style="margin-top:20px;">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Удалить хакатон</button>
+        </form>
+    </section>
 </div>
-
 {% endblock %}

@@ -1,54 +1,130 @@
 {% extends "base.html" %}
 
+
+
 {% block content %}
-<h1>Кабинет жюри</h1>
 
-<h2>Проекты на оценивание</h2>
+<div class="page-shell">
 
-{% for project in projects %}
-    <div class="card">
-        <h3>{{ project.title }}</h3>
+    <div class="page-top page-top--compact">
 
-        <p><b>Команда:</b> {{ project.team.team_name }}</p>
-        <p><b>Хакатон:</b> {{ project.team.hackathon.title }}</p>
+        <div>
 
-        {% with assignment=project.judgeassignment_set.first %}
+            <span class="section-eyebrow">Личный кабинет</span>
 
-            {% if assignment and assignment.score_set.exists %}
+            <h1 class="section-title">Кабинет жюри</h1>
 
-                <div class="success" style="margin-bottom: 10px;">
-                    Оценено ✅
-                </div>
+            <p class="page-lead">Проекты на оценивание и назначенные хакатоны.</p>
 
-                <a class="btn"
-                href="{% url 'score_project' project.id %}">
-                    Изменить оценку
-                </a>
+        </div>
 
-            {% else %}
-
-                <a class="btn"
-                href="{% url 'score_project' project.id %}">
-                    Оценить
-                </a>
-
-            {% endif %}
-
-        {% endwith %}
     </div>
-{% empty %}
-    <p>Сейчас нет проектов для оценивания.</p>
-{% endfor %}
 
-<h2>Ваши хакатоны</h2>
 
-{% for judge in judge_records %}
-    <div class="card">
-        <h3>{{ judge.hackathon.title }}</h3>
-        <p>Статус: {{ judge.hackathon.status }}</p>
-    </div>
-{% empty %}
-    <p>Вы пока не назначены жюри.</p>
-{% endfor %}
+
+    <section class="page-section">
+
+        <div class="page-section__head">
+
+            <h2 class="page-section__title">Проекты на оценивание</h2>
+
+        </div>
+
+        {% if projects %}
+
+            <div class="cards-grid">
+
+                {% for project in projects %}
+
+                    <article class="team-card">
+
+                        <h3 class="team-card__title">{{ project.title }}</h3>
+
+                        <ul class="hackathon-card__meta">
+
+                            <li><span>Команда</span> {{ project.team.team_name }}</li>
+
+                            <li><span>Хакатон</span> {{ project.team.hackathon.title }}</li>
+
+                        </ul>
+
+                        {% with assignment=project.judgeassignment_set.first %}
+
+                            {% if assignment and assignment.score_set.exists %}
+
+                                <span class="notice notice--success">Оценено</span>
+
+                                <a class="btn btn-ghost" href="{% url 'score_project' project.id %}">Изменить оценку</a>
+
+                            {% else %}
+
+                                <a class="btn btn-primary" href="{% url 'score_project' project.id %}">Оценить проект</a>
+
+                            {% endif %}
+
+                        {% endwith %}
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state empty-state--inline">
+
+                <p>Сейчас нет проектов для оценивания.</p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <section class="page-section">
+
+        <div class="page-section__head">
+
+            <h2 class="page-section__title">Ваши хакатоны</h2>
+
+        </div>
+
+        {% if judge_records %}
+
+            <div class="cards-grid cards-grid--compact">
+
+                {% for judge in judge_records %}
+
+                    <article class="team-card team-card--compact">
+
+                        <span class="status-badge status-{{ judge.hackathon.status }}">{{ judge.hackathon.get_status_display }}</span>
+
+                        <h3 class="team-card__title">{{ judge.hackathon.title }}</h3>
+
+                        <a class="btn btn-ghost" href="{% url 'hackathon_detail' judge.hackathon.id %}">Открыть хакатон</a>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state empty-state--inline">
+
+                <p>Вы пока не назначены жюри.</p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
 
 {% endblock %}
+

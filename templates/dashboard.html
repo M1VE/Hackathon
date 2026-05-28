@@ -1,25 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Личный кабинет</h1>
-
-<div class="card">
-    <p><b>Email:</b> {{ user.email }}</p>
-    <p><b>Имя:</b> {{ user.full_name }}</p>
-    <p><b>Роль:</b> {{ user.role }}</p>
-</div>
-
-<h2>Мои хакатоны</h2>
-
-<div class="grid">
-    {% for item in participations %}
-        <div class="card">
-            <h3>{{ item.hackathon.title }}</h3>
-            <p>{{ item.hackathon.description|truncatechars:120 }}</p>
-            <a class="btn" href="{% url 'hackathon_detail' item.hackathon.id %}">Открыть</a>
+<div class="page-shell">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Личный кабинет</span>
+            <h1 class="section-title">Кабинет</h1>
+            <p class="page-lead">{{ user.full_name }} · {{ user.role }}</p>
         </div>
-    {% empty %}
-        <p>Вы пока не зарегистрированы ни на один хакатон.</p>
-    {% endfor %}
+    </div>
+
+    <section class="page-section">
+        <div class="page-section__head"><h2 class="page-section__title">Мои хакатоны</h2></div>
+        {% if participations %}
+            <div class="cards-grid">
+                {% for item in participations %}
+                    {% include "includes/hackathon_card.html" with hackathon=item.hackathon %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state empty-state--inline">
+                <p>Вы пока не зарегистрированы ни на один хакатон.</p>
+                <a class="btn btn-primary" href="{% url 'hackathon_list' %}">Смотреть хакатоны</a>
+            </div>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}

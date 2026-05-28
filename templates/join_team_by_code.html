@@ -1,20 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Вступить в команду по invite code</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">{{ hackathon.title }}</span>
+            <h1 class="section-title">Вступить по invite code</h1>
+            <p class="page-lead">Введите код, который передал капитан команды.</p>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'hackathon_detail' hackathon.id %}">← К хакатону</a>
+    </div>
 
-<div class="card">
-    <p><b>Хакатон:</b> {{ hackathon.title }}</p>
+    <form method="post" class="form panel-form">
+        {% csrf_token %}
+        <label for="invite_code">Invite code</label>
+        <input type="text" id="invite_code" name="invite_code" placeholder="Например: ABC123" required>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Вступить</button>
+        </div>
+    </form>
 </div>
-
-<form method="post" class="form">
-    {% csrf_token %}
-
-    <label>Invite code</label>
-    <input type="text" name="invite_code" required>
-
-    <button class="btn" type="submit">
-        Вступить
-    </button>
-</form>
 {% endblock %}

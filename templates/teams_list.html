@@ -1,53 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div style="margin-bottom: 24px;">
-    <h1 style="margin: 0 0 16px 0;">👥 Команды — {{ hackathon.title }}</h1>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <a class="btn" href="{% url 'hackathon_detail' hackathon.id %}">← Назад к хакатону</a>
-        <a class="btn" href="{% url 'home' %}">На главную</a>
-        {% if user.role == 'organizer' %}
-            <a class="btn" href="{% url 'auto_assign_mentors' hackathon.id %}">Автораспределение менторов</a>
-        {% endif %}
+<div class="page-shell page-shell--comfortable">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Хакатон</span>
+            <h1 class="section-title">Команды — {{ hackathon.title }}</h1>
+            <p class="page-lead">Все зарегистрированные команды и их состав.</p>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-ghost" href="{% url 'hackathon_detail' hackathon.id %}">← К хакатону</a>
+            {% if user.role == 'organizer' %}
+                <a class="btn btn-primary btn-sm" href="{% url 'auto_assign_mentors' hackathon.id %}">Автораспределение менторов</a>
+            {% endif %}
+        </div>
     </div>
+
+    {% if teams %}
+        <div class="cards-grid cards-grid--teams">
+            {% for team in teams %}
+                {% include "includes/team_card.html" with team=team hackathon=hackathon %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>Команд пока нет</h3>
+            <p>Когда участники создадут команды, они появятся здесь.</p>
+            <a class="btn btn-primary" href="{% url 'hackathon_detail' hackathon.id %}">На страницу хакатона</a>
+        </div>
+    {% endif %}
 </div>
-
-{% if teams %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-        {% for team in teams %}
-            <div style="background: #111827; border: 1px solid #334155; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0; color: #fff; font-size: 18px;">{{ team.team_name }}</h3>
-                    {% if team.is_open_for_random_join %}
-                        <span style="color: #22c55e; font-weight: bold; font-size: 12px; background: rgba(34,197,94,0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid #22c55e;">OPEN</span>
-                    {% else %}
-                        <span style="color: #ef4444; font-weight: bold; font-size: 12px; background: rgba(239,68,68,0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid #ef4444;">CLOSED</span>
-                    {% endif %}
-                </div>
-
-                <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Капитан:</b> {{ team.captain.full_name }}</p>
-                <p style="margin: 0; color: #9ca3af; font-size: 14px;"><b style="color:#cbd5e1;">Университет:</b> {{ team.captain.university|default:"-" }}</p>
-                <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                    <b style="color:#cbd5e1;">Ментор:</b>
-                    {% if team.mentor %}{{ team.mentor.full_name }}{% else %}Не назначен{% endif %}
-                </p>
-                <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                    <b style="color:#cbd5e1;">Участников:</b> {{ team.members.count }}/{{ hackathon.max_team_size }}
-                </p>
-
-                <div style="display: flex; gap: 10px; margin-top: auto; padding-top: 10px; flex-wrap: wrap;">
-                    {% if user.is_authenticated and user.role == "participant" and team.is_open_for_random_join %}
-                        <a class="btn" href="{% url 'join_open_team' hackathon.id team.id %}" style="flex: 1; text-align: center;">Вступить</a>
-                    {% endif %}
-                    <a class="btn" href="{% url 'team_detail' team.id %}" style="flex: 1; text-align: center;">Открыть</a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="card">
-        <p style="color: #9ca3af;">Команд пока нет.</p>
-    </div>
-{% endif %}
 
 {% endblock %}

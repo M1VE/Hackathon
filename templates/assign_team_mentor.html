@@ -1,46 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">{{ team.hackathon.title }}</span>
+            <h1 class="section-title">Назначить ментора</h1>
+            <p class="page-lead">Команда «{{ team.team_name }}»</p>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'team_detail' team.id %}">← К команде</a>
+    </div>
 
-<div class="card">
-
-    <h1>
-        Назначить ментора
-    </h1>
-
-    <h2>
-        {{ team.team_name }}
-    </h2>
-
-    <form method="post">
-
+    <form method="post" class="form panel-form">
         {% csrf_token %}
-
-        <label>
-            Выберите ментора
-        </label>
-
+        <label>Выберите ментора</label>
         <select name="mentor_id" required>
-
             {% for mentor in mentors %}
-
-                <option value="{{ mentor.id }}">
-                    {{ mentor.full_name }}
-                    ({{ mentor.email }})
-                </option>
-
+                <option value="{{ mentor.id }}">{{ mentor.full_name }} ({{ mentor.email }})</option>
             {% endfor %}
-
         </select>
-
-        <button class="btn" type="submit">
-
-            Назначить
-
-        </button>
-
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Назначить</button>
+        </div>
     </form>
-
 </div>
-
 {% endblock %}

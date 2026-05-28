@@ -1,33 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Назначить проект жюри</h1>
+<div class="page-shell page-shell--narrow">
+    <div class="page-top page-top--compact">
+        <div>
+            <span class="section-eyebrow">Организатор</span>
+            <h1 class="section-title">Назначить проект жюри</h1>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'manage_hackathon' hackathon.id %}">← Назад</a>
+    </div>
 
-<form method="post" class="form">
-    {% csrf_token %}
-
-    <label>Жюри</label>
-
-    <select name="judge_record_id">
-        {% for judge in judges %}
-            <option value="{{ judge.id }}">
-                {{ judge.user.full_name }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <label>Проект</label>
-
-    <select name="project_id">
-        {% for project in projects %}
-            <option value="{{ project.id }}">
-                {{ project.title }} — {{ project.team.team_name }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <button class="btn" type="submit">
-        Назначить
-    </button>
-</form>
+    <form method="post" class="form panel-form">
+        {% csrf_token %}
+        <label>Жюри</label>
+        <select name="judge_record_id">
+            {% for judge in judges %}
+                <option value="{{ judge.id }}">{{ judge.user.full_name }}</option>
+            {% endfor %}
+        </select>
+        <label>Проект</label>
+        <select name="project_id">
+            {% for project in projects %}
+                <option value="{{ project.id }}">{{ project.title }} — {{ project.team.team_name }}</option>
+            {% endfor %}
+        </select>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Назначить</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
