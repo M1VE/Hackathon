@@ -136,47 +136,12 @@ USE_SQLITE = os.getenv("USE_SQLITE", "False") == "True"
 
 
 
-if USE_SQLITE:
-
-    DATABASES = {
-
-        "default": {
-
-            "ENGINE": "django.db.backends.sqlite3",
-
-            "NAME": BASE_DIR / "db.sqlite3",
-
-        }
-
-    }
-
-else:
-
-    DATABASES = {
-
-        "default": {
-
-            "ENGINE": "django.db.backends.postgresql",
-
-            "NAME": "hackathondb",
-
-            "USER": "postgres",
-
-            "PASSWORD": os.getenv("DB_PASSWORD", "admin"),
-
-            "HOST": "127.0.0.1",
-
-            "PORT": "5432",
-
-            "OPTIONS": {
-
-                "client_encoding": "UTF8",
-
-            },
-
-        }
-
-    }
+DATABASES = {
+    "default": dj_database_url.parse(
+        os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+    )
+}
 
 
 
