@@ -27,7 +27,7 @@ Bash
 python manage.py migrate
 
 4. Запуск сервера
-
+Сайт запущен на : [https://veridian.pythonanywhere.com/](https://veridian.pythonanywhere.com/) до 30 июня 2026
 Запустите сервер разработки:
 Bash
 
