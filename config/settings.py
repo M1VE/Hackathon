@@ -134,18 +134,21 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 USE_SQLITE = os.getenv("USE_SQLITE", "False") == "True"
 
-
-
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.getenv("DATABASE_URL"),
-        conn_max_age=600,
-    )
-}
-
-
-
-DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
+if USE_SQLITE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.getenv("DATABASE_URL"),
+            conn_max_age=600,
+        )
+    }
+    DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 
 
