@@ -1666,10 +1666,17 @@ button.btn {
     font-size: 20px;
     line-height: 1.3;
     font-weight: 800;
+    min-width: 0;
 }
 
 .hackathon-card__title a {
     color: #0b1228;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .hackathon-card__title a:hover {
@@ -1973,6 +1980,12 @@ button.btn {
     line-height: 1.3;
     font-weight: 800;
     min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .team-card > .btn {
